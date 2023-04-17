@@ -1,0 +1,211 @@
+
+7:                                                ; preds = %15, %1
+  %8 = load i32, ptr %3, align 4
+  %9 = load i32, ptr %2, align 4
+  %10 = icmp slt i32 %8, %9
+  br i1 %10, label %11, label %18
+
+8:                                                ; preds = %7
+  %9 = load i32, ptr %4, align 4
+  %10 = load i32, ptr %3, align 4
+  %11 = add nsw i32 %9, %10
+  store i32 %11, ptr %4, align 4
+  br label %12
+
+9:                                                ; preds = %8
+  %10 = load i32, ptr %3, align 4
+  %11 = add nsw i32 %10, 1
+  store i32 %11, ptr %3, align 4
+  br label %7, !llvm.loop !6
+  %t0 = load i32, ptr %3, align 4  %t0 = load i32, ptr %3, align 4
+Adding edge fromto 
+  %t0 = load i32, ptr %3, align 4
+Adding edge fromto 
+  store i32 %t10, ptr %3, align 4  %t0 = load i32, ptr %3, align 4  %t1 = load i32, ptr %2, align 4  %t1 = load i32, ptr %2, align 4
+Adding edge fromto 
+  %t1 = load i32, ptr %2, align 4
+Adding edge fromto 
+  %t1 = load i32, ptr %2, align 4  %t1 = load i32, ptr %2, align 4  %t2 = icmp slt i32 %t0, %t1  %t2 = icmp slt i32 %t0, %t1
+Adding edge fromto 
+  %t4 = load i32, ptr %4, align 4  %t4 = load i32, ptr %4, align 4
+Adding edge fromto 
+  %t4 = load i32, ptr %4, align 4
+Adding edge fromto 
+  store i32 %t6, ptr %4, align 4  %t4 = load i32, ptr %4, align 4  %t5 = load i32, ptr %3, align 4  %t5 = load i32, ptr %3, align 4
+Adding edge fromto 
+  %t5 = load i32, ptr %3, align 4
+Adding edge fromto 
+  %t0 = load i32, ptr %3, align 4  %t5 = load i32, ptr %3, align 4  %t6 = add nsw i32 %t4, %t5  %t6 = add nsw i32 %t4, %t5
+Adding edge fromto 
+  store i32 %t6, ptr %4, align 4  %t4 = load i32, ptr %4, align 4  store i32 %t6, ptr %4, align 4
+Adding edge fromto 
+  %t9 = load i32, ptr %3, align 4  %t9 = load i32, ptr %3, align 4
+Adding edge fromto 
+  %t9 = load i32, ptr %3, align 4
+Adding edge fromto 
+  %t5 = load i32, ptr %3, align 4  %t9 = load i32, ptr %3, align 4  %t10 = add nsw i32 %t9, 1  %t10 = add nsw i32 %t9, 1
+Adding edge fromto 
+  store i32 %t10, ptr %3, align 4  %t9 = load i32, ptr %3, align 4  store i32 %t10, ptr %3, align 4
+Adding edge fromto 
+
+tophalf_:
+  switch i64 0, label %exitblock [
+    i64 0, label %exitblock
+    i64 1, label %tophalf_1
+  ]
+
+bottomhalf_:                                      ; preds = %bottomhalf_4, %bottomhalf_4, %tophalf_3, %tophalf_3
+  switch i64 0, label %exitblock [
+    i64 0, label %exitblock
+    i64 1, label %bottomhalf_2
+  ]
+
+tophalf_1:                                        ; preds = %tophalf_
+  switch i64 0, label %tophalf_3 [
+    i64 1, label %tophalf_3
+  ]
+
+bottomhalf_2:                                     ; preds = %bottomhalf_
+  switch i64 0, label %bottomhalf_4 [
+    i64 1, label %bottomhalf_4
+  ]
+
+tophalf_3:                                        ; preds = %tophalf_1, %tophalf_1
+  switch i64 0, label %bottomhalf_ [
+    i64 1, label %bottomhalf_
+  ]
+
+bottomhalf_4:                                     ; preds = %bottomhalf_2, %bottomhalf_2
+  switch i64 0, label %bottomhalf_ [
+    i64 1, label %bottomhalf_
+  ]
+
+exitblock:                                        ; preds = %bottomhalf_, %tophalf_, %bottomhalf_, %tophalf_
+  ret void
+define void @dummyloopunroll(i32 %0) {
+tophalf_:
+  switch i64 0, label %exitblock [
+    i64 0, label %exitblock
+    i64 1, label %tophalf_1
+  ]
+
+bottomhalf_:                                      ; preds = %bottomhalf_4, %bottomhalf_4, %tophalf_3, %tophalf_3
+  switch i64 0, label %exitblock [
+    i64 0, label %exitblock
+    i64 1, label %bottomhalf_2
+  ]
+
+tophalf_1:                                        ; preds = %tophalf_
+  switch i64 0, label %tophalf_3 [
+    i64 1, label %tophalf_3
+  ]
+
+bottomhalf_2:                                     ; preds = %bottomhalf_
+  switch i64 0, label %bottomhalf_4 [
+    i64 1, label %bottomhalf_4
+  ]
+
+tophalf_3:                                        ; preds = %tophalf_1, %tophalf_1
+  switch i64 0, label %bottomhalf_ [
+    i64 1, label %bottomhalf_
+  ]
+
+bottomhalf_4:                                     ; preds = %bottomhalf_2, %bottomhalf_2
+  switch i64 0, label %bottomhalf_ [
+    i64 1, label %bottomhalf_
+  ]
+
+exitblock:                                        ; preds = %bottomhalf_, %tophalf_, %bottomhalf_, %tophalf_
+  ret void
+}
+
+Adding edge fromto 
+
+Adding edge fromto 
+
+Adding edge fromto 
+
+Adding edge fromto 
+
+Adding edge fromto 
+
+Adding edge fromto 
+
+Adding edge fromto 
+
+Adding edge fromto 
+
+Adding edge fromto 
+
+Adding edge fromto 
+
+Adding edge fromto 
+
+Adding edge fromto 
+
+Adding edge fromto 
+>>Skipping the edge, as it has been added already.
+>>Skipping the edge, as it has been added already.
+>>Skipping the edge, as it has been added already.
+>>Skipping the edge, as it has been added already.
+>>Skipping the edge, as it has been added already.
+>>Skipping the edge, as it has been added already.
+>>Skipping the edge, as it has been added already.
+>>Skipping the edge, as it has been added already.
+>>Skipping the edge, as it has been added already.
+header:
+exit:
+num of blocks:3
+
+
+>>Starting SCC computation
+>>Adding [[  br i1 %t2, label %8, label %10]] to SCC #0
+>>SCC edge from 0 to 1
+>>Adding [[  br label %7, !llvm.loop !6]] to SCC #1
+>>SCC edge from 0 to 2
+>>Adding [[  %t10 = add nsw i32 %t9, 1]] to SCC #2
+>>SCC edge from 0 to 3
+>>Adding [[  br label %9]] to SCC #3
+>>SCC edge from 0 to 4
+>>Adding [[  %t6 = add nsw i32 %t4, %t5]] to SCC #4
+>>SCC edge from 0 to 5
+>>Adding [[  store i32 %t6, ptr %4, align 4]] to SCC #5
+>>Adding [[  %t4 = load i32, ptr %4, align 4]] to SCC #5
+>>SCC edge from 0 to 6
+>>Adding [[  %t2 = icmp slt i32 %t0, %t1]] to SCC #6
+>>SCC edge from 0 to 7
+>>Adding [[  %t1 = load i32, ptr %2, align 4]] to SCC #7
+>>SCC edge from 0 to 8
+>>Adding [[  %t5 = load i32, ptr %3, align 4]] to SCC #8
+>>Adding [[  %t9 = load i32, ptr %3, align 4]] to SCC #8
+>>Adding [[  store i32 %t10, ptr %3, align 4]] to SCC #8
+>>Adding [[  %t0 = load i32, ptr %3, align 4]] to SCC #8
+>>Successfully computed SCCs, with sccNum = 9
+
+>>Latencies by SCC:
+SCC #0: 0
+SCC #1: 0
+SCC #2: 1
+SCC #3: 0
+SCC #4: 1
+SCC #5: 4
+SCC #6: 1
+SCC #7: 2
+SCC #8: 8
+latency info:17 8
+part 0 size: 2
+part 1 size: 7
+live variable information
+livein:   			
+liveout:  
+inserting sychronization
+
+SYN: channel 0: t0 -> t0 [0]
+SYN: channel 1: t11 -> t0 [2]
+SYN: channel 2: t5 -> t5 [0]
+SYN: channel 3: t0 -> t5 [2]
+SYN: channel 4: t9 -> t9 [0]
+SYN: channel 5: t5 -> t9 [2]
+SYN: channel 6: t9 -> t11 [2]
+SYN: channel 7: t3 -> t4 [5]
+ERROR: here cannot be null

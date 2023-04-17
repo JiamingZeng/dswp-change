@@ -1,0 +1,39 @@
+t0   %t0 = load i32, ptr %3, align 4:
+	t0[0]	t5[2]	
+
+t1   %t1 = load i32, ptr %2, align 4:
+	t1[0]	t1[2]	
+
+t2   %t2 = icmp slt i32 %t0, %t1:
+	t2[0]	
+
+t3   br i1 %t2, label %8, label %10:
+	t4[5]	t5[5]	t6[5]	t7[5]	t8[5]	t9[5]	t10[5]	t11[5]	t12[5]	t0[5]	t1[5]	t2[5]	t3[5]	
+
+t4   %t4 = load i32, ptr %4, align 4:
+	t4[0]	t7[2]	
+
+t5   %t5 = load i32, ptr %3, align 4:
+	t5[0]	t9[2]	
+
+t6   %t6 = add nsw i32 %t4, %t5:
+	t6[0]	
+
+t7   store i32 %t6, ptr %4, align 4:
+	t4[2]	
+
+t8   br label %9:
+	
+
+t9   %t9 = load i32, ptr %3, align 4:
+	t9[0]	t11[2]	
+
+t10   %t10 = add nsw i32 %t9, 1:
+	t10[0]	
+
+t11   store i32 %t10, ptr %3, align 4:
+	t0[2]	
+
+t12   br label %7, !llvm.loop !6:
+	
+

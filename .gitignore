@@ -1,0 +1,14 @@
+*.so
+*.a
+*.o
+*.o.ll
+*.d
+*.bc
+*.bc.ll
+*.bc.ll.ps
+*.bc.ll.pdf
+*.out
+
+# dag
+# partition
+# showgraph
