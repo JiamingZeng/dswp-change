@@ -37,7 +37,10 @@ void DSWP::insertSynchronization(Loop *L) {
 			if (isa<BranchInst>(nu)) {
 				continue;
 			}
+			errs() << "produce\n";
 			insertProduce(nu, nv, e.dtype, channel, utr, vtr);
+			errs() << "consume\n";
+
 			insertConsume(nu, nv, e.dtype, channel, utr, vtr);
 			channel++;
 		}
@@ -50,11 +53,7 @@ void DSWP::insertProduce(Instruction *u, Instruction *v, DType dtype,
 	Function *fun = module->getFunction("sync_produce");
 	vector<Value *> args;
 
-	// if (isa<BranchInst>(u)) {
-	// 	error("I don't know how do deal with it");
-	// 	return;
-	// }
-
+	errs() << "output";
 	Instruction *insPos = u->getNextNode();
 	
 	if (insPos == NULL) {
@@ -81,17 +80,17 @@ void DSWP::insertProduce(Instruction *u, Instruction *v, DType dtype,
 		cast->insertBefore(insPos);
 		args.push_back(cast);
 	// TODO: for true memory dependences, need to send anything or just sync?
-	// } else if (dtype == DTRUE) { // true dep
-	// 	error("check mem dep!!");
+	} else if (dtype == DTRUE) { // true dep
+		error("check mem dep!!");
 
-	// 	StoreInst *store = dyn_cast<StoreInst>(u);
-	// 	if (store == NULL) {
-	// 		error("not true dependency!");
-	// 	}
-	// 	BitCastInst *cast = new BitCastInst(store->getOperand(0),
-	// 				Type::getInt8PtrTy(*context), u->getName().str() + "_ptr");
-	// 	cast->insertBefore(insPos);
-	// 	args.push_back(cast);
+		StoreInst *store = dyn_cast<StoreInst>(u);
+		if (store == NULL) {
+			error("not true dependency!");
+		}
+		BitCastInst *cast = new BitCastInst(store->getOperand(0),
+					Type::getInt8PtrTy(*context), u->getName().str() + "_ptr");
+		cast->insertBefore(insPos);
+		args.push_back(cast);
 	} else { // others
 		// just send a dummy value for synchronization
 		args.push_back(Constant::getNullValue(Type::getInt64Ty(*context)));
@@ -110,6 +109,10 @@ void DSWP::insertConsume(Instruction *u, Instruction *v, DType dtype,
 	Instruction *oldu = dyn_cast<Instruction>(newToOld[u]);
 	Instruction *insPos = placeEquivalents[vthread][oldu];
 	if (insPos == NULL) {
+		if (instMap[vthread][oldu] == NULL) {
+			errs() << "no old u";
+			return;
+		}
 		insPos = dyn_cast<Instruction>(instMap[vthread][oldu]);
 		if (insPos == NULL) {
 			error("can't insert nowhere");
@@ -185,40 +188,40 @@ void DSWP::insertConsume(Instruction *u, Instruction *v, DType dtype,
 		// 	replaceUses(user, reps);
 		// }
 
-	// } 
+	} 
 	// TODO: need to handle true memory dependences more than just syncing?
-	// else if (dtype == DTRUE) {	//READ after WRITE
-	// 	error("check mem dep!!");
+	else if (dtype == DTRUE) {	//READ after WRITE
+		error("check mem dep!!");
 
-	// 	if (!isa<LoadInst>(v)) {
-	// 		error("not true dependency");
-	// 	}
-	// 	BitCastInst *cast = new BitCastInst(
-	// 		call, v->getType(), call->getName().str() + "_ptr");
-	// 	cast->insertBefore(v);
+		if (!isa<LoadInst>(v)) {
+			error("not true dependency");
+		}
+		BitCastInst *cast = new BitCastInst(
+			call, v->getType(), call->getName().str() + "_ptr");
+		cast->insertBefore(v);
 
-	// 	// replace the v with 'cast' in v's thread:
-	// 	// (other thread with be dealed using dependence)
-	// 	for (Instruction::use_iterator ui = v->use_begin(), ue = v->use_end();
-	// 			ui != ue; ui++) {
-	// 		Instruction *user = dyn_cast<Instruction>(*ui);
+		// replace the v with 'cast' in v's thread:
+		// (other thread with be dealed using dependence)
+		for (Instruction::use_iterator ui = v->use_begin(), ue = v->use_end();
+				ui != ue; ui++) {
+			Instruction *user = dyn_cast<Instruction>(*ui);
 
-	// 		if (user == NULL) {
-	// 			error("how could it be NULL");
-	// 		}
+			if (user == NULL) {
+				error("how could it be NULL");
+			}
 
-	// 	//	int userthread = this->getNewInstAssigned(user);
-	// 		if (user->getParent()->getParent() != v->getParent()->getParent()) {
-	// 			continue;
-	// 		}
+		//	int userthread = this->getNewInstAssigned(user);
+			if (user->getParent()->getParent() != v->getParent()->getParent()) {
+				continue;
+			}
 
-	// 		for (unsigned i = 0; i < user->getNumOperands(); i++) {
-	// 			Value * op = user->getOperand(i);
-	// 			if (op == v) {
-	// 				user->setOperand(i, cast);
-	// 			}
-	// 		}
-		// }
+			for (unsigned i = 0; i < user->getNumOperands(); i++) {
+				Value * op = user->getOperand(i);
+				if (op == v) {
+					user->setOperand(i, cast);
+				}
+			}
+		}
 	} else {
 		// nothing to do
 	}
@@ -253,7 +256,8 @@ void DSWP::cleanup(Loop *L, LPPassManager &LPM) {
 			}
 
 			if (term == NULL) {
-				error("term cannot be null");
+				// error("term cannot be null");
+				continue;
 			}
 
 			while (true) {

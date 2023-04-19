@@ -1,7 +1,7 @@
 # correct code
 # opt -enable-new-pm=0 -load /n/eecs583a/home/zjiaming/dswp-change/DSWP.so -dswp obj.o -o out.o
 
-clang -c -fPIE simple.c -o obj.o -emit-llvm
+clang -c -fPIE problem1.c -o obj.o -emit-llvm
 llvm-dis obj.o
 llc -filetype=obj obj.o -o test.o
 clang test.o -o test.out

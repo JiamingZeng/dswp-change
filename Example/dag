@@ -1,19 +1,11 @@
-num:9
-SCC 0:t3 
-	dependent scc:1 2 3 4 5 6 7 8 
-SCC 1:t12 
+num:5
+SCC 0:t1 t2 t3 t4 t5 t6 t7 t13 t14 t15 t0 
+	dependent scc:1 2 3 4 
+SCC 1:t16 
 	dependent scc:
-SCC 2:t10 
+SCC 2:t12 
 	dependent scc:
-SCC 3:t8 
+SCC 3:t11 
 	dependent scc:
-SCC 4:t6 
-	dependent scc:
-SCC 5:t7 t4 
-	dependent scc:
-SCC 6:t2 
-	dependent scc:
-SCC 7:t1 
-	dependent scc:
-SCC 8:t5 t9 t11 t0 
+SCC 4:t10 t8 t9 
 	dependent scc:

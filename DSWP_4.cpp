@@ -209,6 +209,7 @@ void DSWP::loopSplit(Loop *L) {
 		 * figure out which blocks we use or are dependent on in this thread
 		 */
 		set<BasicBlock *> relbb;
+		set<Instruction *> relIns;
 		//relbb.insert(header);
 		errs() << "figure out which blocks we use or are dependent on in this thread \n";
 		for (vector<int>::iterator ii = part[i].begin(), ie = part[i].end();
@@ -219,15 +220,19 @@ void DSWP::loopSplit(Loop *L) {
 					iii != iie; ++iii) {
 				Instruction *inst = *iii;
 				relbb.insert(inst->getParent());
-
+				errs() << "REl ins";
+				inst->print(errs());
+				relIns.insert(inst);
 				// add blocks which the instruction is dependent on
-				const vector<Edge> &edges = rev[inst];
-				for (vector<Edge>::const_iterator ei = edges.begin(),
-												  ee = edges.end();
-						ei != ee; ei++) {
-					Instruction *dep = ei->v;
-					relbb.insert(dep->getParent());
-				}
+
+				// const vector<Edge> &edges = rev[inst];
+				// for (vector<Edge>::const_iterator ei = edges.begin(),
+				// 								  ee = edges.end();
+				// 		ei != ee; ei++) {
+				// 	Instruction *dep = ei->v;
+				// 	errs() << "inserted!\n";
+				// 	relbb.insert(dep->getParent());
+				// }
 			}
 		}
 
@@ -253,6 +258,9 @@ void DSWP::loopSplit(Loop *L) {
 				BasicBlock::Create(*context, "new-entry", curFunc);
 		BasicBlock *newExit = BasicBlock::Create(*context, "new-exit", curFunc);
 
+
+		BBMap[header] = BasicBlock::Create(*context,
+				header->getName().str() + "_" + itoa(i), curFunc, newExit);
 		// make copies of the basic blocks
 		for (set<BasicBlock *>::iterator bi = relbb.begin(), be = relbb.end();
 				bi != be; ++bi) {
@@ -264,7 +272,9 @@ void DSWP::loopSplit(Loop *L) {
 		BBMap[exit] = newExit;
 
 		if (BBMap[header] == NULL) {
+			errs() << "Added";
 			error("this must be a error early in dependency analysis stage");
+			errs() << "is null";
 		}
 
 		// errs() << "this must be a error early in dependency analysis stage \n";
@@ -285,11 +295,11 @@ void DSWP::loopSplit(Loop *L) {
 				bi != be; bi++) {
 			BasicBlock *BB = *bi;
 			BasicBlock *NBB = BBMap[BB];
-			errs() << "1 \n";
+			//errs() << "1 \n";
 			for (BasicBlock::iterator ii = BB->begin(), ie = BB->end();
 					ii != ie; ii++) {
 				Instruction *inst = dyn_cast<Instruction>(ii);
-				errs() << "2 \n";
+				//errs() << "2 \n";
 				if (assigned[sccId[inst]] != i && !isa<Instruction>(inst)) {
 					// We're not actually inserting this function, but we want
 					// to keep track of where it would have gone. We'll point it
@@ -300,16 +310,22 @@ void DSWP::loopSplit(Loop *L) {
 					continue;
 				}
 
+				if(relIns.find(inst) == relIns.end() && (isa<StoreInst>(inst) || isa<LoadInst>(inst))){
+					errs() << " avoid duplicate for ";
+					inst->print(errs());
+					errs() << " \n";
+					continue;
+				}
 				Instruction *newInst = inst->clone();
 				if (inst->hasName()) {
 					newInst->setName(inst->getName() + "_" + itoa(i));
 				}
-				errs() << "3 \n";
+				//errs() << "3 \n";
 				// re-point branches and such to new blocks
 				if (BranchInst *newT = dyn_cast<BranchInst>(newInst)) {
-					errs() << "3.5 \n";
+					//errs() << "3.5 \n";
 					unsigned int num_suc = newT->getNumSuccessors();
-					errs() << "4 \n";
+					//errs() << "4 \n";
 					// re-point successor blocks
 					for (unsigned int j = 0; j < num_suc; j++) {
 						BasicBlock *oldBB = newT->getSuccessor(j);
@@ -318,7 +334,7 @@ void DSWP::loopSplit(Loop *L) {
 						if (oldBB != exit && !L->contains(oldBB)) {
 							// branching to a block outside the loop that's
 							// not the exit. this should be impossible...
-							errs() << "5 \n";
+							//errs() << "5 \n";
 							continue;
 						}
 
@@ -333,7 +349,7 @@ void DSWP::loopSplit(Loop *L) {
 								break;
 							}
 						}
-						errs() << "10 \n";
+						//errs() << "10 \n";
 						// replace the target
 						newT->setSuccessor(j, newBB);
 					}
@@ -381,12 +397,28 @@ void DSWP::loopSplit(Loop *L) {
 					}
 				}
 
+				// SCC: vector of intrs part[i] 
+				// Inst : vector of inst SCC 
+				// for (int part[i])
+
+				
+				// errs() << "instruction currently dealing with: ";
+				// inst->print(errs());
+				// errs() << "\n";
+				
+				errs() << "i am here !!!" << "\n";
+
 				instMap[i][inst] = newInst;
 				newInstAssigned[newInst] = i;
 				newToOld[newInst] = inst;
+				// newInst->dump();
+				// find part[i]'s instruction
+				
 
-				//newInst->dump();
 				NBB->getInstList().push_back(newInst);
+				errs() << "All the instruction";
+				newInst->print(errs());
+				errs() <<"\n";
 
 				for (to_point_t::iterator pi = instructions_to_point.begin(),
 										  pe = instructions_to_point.end();
@@ -412,7 +444,6 @@ void DSWP::loopSplit(Loop *L) {
 		// 	arglist.push_back(arg_start);
 		// }
 		// iterator_range<llvm::Function::arg_iterator> arglist = curFunc->args();
-		errs() <<"argument size error!";
 		if (curFunc->arg_size() != 1) {
 			errs() <<"argument size error!";
 			error("argument size error!");
@@ -471,6 +502,9 @@ void DSWP::loopSplit(Loop *L) {
 				ii != ie; ++ii) {
 			Instruction *inst = &(*ii);
 			replaceUses(inst, instMap[i]);
+			errs() << "replaced inst";
+			inst->print(errs());
+			errs() << "\n";
 		}
 
 		/*

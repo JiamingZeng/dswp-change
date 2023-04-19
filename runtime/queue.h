@@ -7,7 +7,7 @@
 
 #include <pthread.h>
 
-#define QUEUE_MAXLEN 32
+#define QUEUE_MAXLEN 1024
 
 typedef struct {
   unsigned long long arr[QUEUE_MAXLEN];

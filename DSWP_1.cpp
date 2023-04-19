@@ -27,7 +27,7 @@ void DSWP::buildPDG(Loop *L) {
 	for (Loop::block_iterator bi = L->getBlocks().begin(); bi != L->getBlocks().end(); bi++) {
 		BasicBlock *BB = *bi;
 		errs()<<">>BASIC BLOCK ("<<BB->getName().str()<<")\n";
-		BB->print(outstream);
+		BB->print(errs());
 		errs()<<"\n";
 		for (BasicBlock::iterator ui = BB->begin(); ui != BB->end(); ui++) {
 			Instruction *inst = &(*ui);
@@ -61,17 +61,24 @@ void DSWP::buildPDG(Loop *L) {
 		BasicBlock *BB = *bi;
 		for (BasicBlock::iterator ii = BB->begin(); ii != BB->end(); ii++) {
 			Instruction *inst = &(*ii);
-
+			errs() << "\nInstruction!!!!!";
+			inst->print(errs());
+			errs() << "\n";
 			//data dependence = register dependence + memory dependence
 
 			//begin register dependence
-			for (Value::use_iterator ui = ii->use_begin(); ui != ii->use_end(); ui++) {
-				if (Instruction *user = dyn_cast<Instruction>(*ui)) {
+			for (auto ui : ii->users()) {
+			// for (Value::use_iterator ui = ii->use_begin(); ui != ii->use_end(); ui++) {
+				errs() << "uses";
+				Instruction* a = dyn_cast<Instruction>(ui);
+				a->print(errs());
+				errs() << "\n";
+				if (Instruction *user = dyn_cast<Instruction>(ui)) {
 					if (L->contains(user)) {
 						errs()<<">>REG dependency: [[";
-						inst->print(outstream);
+						inst->print(errs());
 						errs()<<"]] -> [[";
-						user->print(outstream);
+						user->print(errs());
 						errs()<<"]]\n";
 						addEdge(inst, user, REG);
 					}
@@ -88,7 +95,7 @@ void DSWP::buildPDG(Loop *L) {
 			//TODO not sure clobbers mean!!
 
 			errs() << "\n\t";
-			inst->print(outstream);
+			inst->print(errs());
 			errs() << "\t" << "isClobber: " << mdr.isClobber()
 			     << "\t" << "isDef: " << mdr.isDef()
 			     << "\t" << "isNonFuncLocal: " << mdr.isNonFuncLocal()
@@ -102,47 +109,48 @@ void DSWP::buildPDG(Loop *L) {
 					//READ AFTER WRITE
 					if (isa<StoreInst>(dep)) {
 						errs()<<">>MEM read after write (true) dependency: [[";
-						dep->print(outstream);
+						dep->print(errs());
 						errs()<<"]] -> [[";
-						inst->print(outstream);
+						inst->print(errs());
 						errs()<<"]]\n";
 						addEdge(dep, inst, DTRUE);
 					}
 					//READ AFTER ALLOCATE
 					if (isa<AllocaInst>(dep)) {
 						errs()<<">>MEM read after allocate (true) dependency: [[";
-						dep->print(outstream);
+						dep->print(errs());
 						errs()<<"]] -> [[";
-						inst->print(outstream);
+						inst->print(errs());
 						errs()<<"]]\n";
 						addEdge(dep, inst, DTRUE);
 					}
 				}
+
 				if (isa<StoreInst>(inst)) {
 					//WRITE AFTER READ
 					if (isa<LoadInst>(dep)) {
 						errs()<<">>MEM write after read (anti) dependency: [[";
-						dep->print(outstream);
+						dep->print(errs());
 						errs()<<"]] -> [[";
-						inst->print(outstream);
+						inst->print(errs());
 						errs()<<"]]\n";
 						addEdge(dep, inst, DANTI);
 					}
 					//WRITE AFTER WRITE
 					if (isa<StoreInst>(dep)) {
 						errs()<<">>MEM write after write (out) dependency: [[";
-						dep->print(outstream);
+						dep->print(errs());
 						errs()<<"]] -> [[";
-						inst->print(outstream);
+						inst->print(errs());
 						errs()<<"]]\n";
 						addEdge(dep, inst, DOUT);
 					}
 					//WRITE AFTER ALLOCATE
 					if (isa<AllocaInst>(dep)) {
 						errs()<<">>MEM write after allocate (out) dependency: [[";
-						dep->print(outstream);
+						dep->print(errs());
 						errs()<<"]] -> [[";
-						inst->print(outstream);
+						inst->print(errs());
 						errs()<<"]]\n";
 						addEdge(dep, inst, DOUT);
 					}
@@ -172,9 +180,9 @@ void DSWP::buildPDG(Loop *L) {
 						addEdge(dep, inst, DANTI); // TODO: dep type
 
 						errs() << ">>NONLOCAL CALL dependency: [[";
-						dep->print(outstream);
+						dep->print(errs());
 						errs() << "]] -> [[";
-						inst->print(outstream);
+						inst->print(errs());
 						errs() << "]]\n";
 					}
 				} else {
@@ -218,9 +226,9 @@ void DSWP::buildPDG(Loop *L) {
 						// TODO: actually figure out the dependence type
 
 						errs() << ">>NONLOCAL dependency: [[";
-						dep->print(outstream);
+						dep->print(errs());
 						errs() << "]] -> [[";
-						inst->print(outstream);
+						inst->print(errs());
 						errs() << "]]";
 					}
 				}
@@ -435,12 +443,12 @@ void DSWP::buildPDG(Loop *L) {
 	for (Function::iterator FI = ctrlfunc->begin(), FE = ctrlfunc->end();
 		 FI != FE; ++FI) {
 		errs()<<"Contents of block "<<(*FI).getName().str()<<":\n";
-		(*FI).print(outstream);
+		(*FI).print(errs());
 		errs() << "\n";
 	}
 
 	errs()<<">>Printing out FUNCTION ctrlfunc:\n";
-	ctrlfunc->print(outstream);
+	ctrlfunc->print(errs());
 	/*
 	 *
 	 * Begin control dependence calculation
