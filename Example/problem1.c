@@ -11,7 +11,7 @@ int main(void)
   int s3 = 0, s5 = 0, s15 = 0;
   int i;
 
-  for (i = 0; i < 1000; i++) {
+  for (i = 0; i < 15; i++) {
     if (i % 3 == 0) {
       s3 += i;
     }

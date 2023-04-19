@@ -4,11 +4,12 @@ CXXFLAGS = -fPIC -rdynamic $(shell llvm-config --cxxflags) -g -O0
 .PHONY: all runtime-tests gdb/% valgrind/% time/% \
 		tidy clean clean-examples
 
-all: DSWP.so
-# all: DSWP.so runtime/libruntime.a
+# all: DSWP.so
+all: DSWP.so runtime/libruntime.a
 
 PASS_OBJS = DSWP_0.o DSWP_1.o DSWP_2.o DSWP_3.o DSWP_4.o DSWP_5.o DSWP_DEBUG.o \
 	        Utils.o raw_os_ostream.o
+# simple_sync.o queue.o runtime_debug.o
 RUNTIME_OBJS = runtime/queue.o runtime/simple_sync.o runtime/runtime_debug.o
 RT_TEST_OBJS = runtime/tests/sync_test.o runtime/tests/test.o
 -include $(PASS_OBJS:%.o=%.d) $(RUNTIME_OBJS:%.o=%.d) $(RT_TEST_OBJS:%.o=%.d)

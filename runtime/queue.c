@@ -18,6 +18,7 @@ void queue_destroy(queue_t *q) {
 
 void queue_push(queue_t *q, unsigned long long elem) {
   pthread_mutex_lock(&(q->mutex));
+  printf("We have pushed q size %d\n",q->size);
   while (q->size == QUEUE_MAXLEN) {
     pthread_cond_wait(&(q->full_cvar), &(q->mutex));
   }
@@ -31,6 +32,7 @@ void queue_push(queue_t *q, unsigned long long elem) {
 
 unsigned long long queue_pop(queue_t *q) {
   pthread_mutex_lock(&(q->mutex));
+  printf("We have q size %d\n",q->size);
   while (q->size == 0) {
     pthread_cond_wait(&(q->empty_cvar), &(q->mutex));
   }

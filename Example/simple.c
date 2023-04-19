@@ -22,7 +22,7 @@ int fun(int a) {
 
 int main() {
 	int res;
-	res = fun(100000);
+	res = fun(2);
 	printf("return value: %d\n", res);
 	return 0;
 }

@@ -55,7 +55,7 @@ void DSWP::insertProduce(Instruction *u, Instruction *v, DType dtype,
 	// 	return;
 	// }
 
-	Instruction *insPos = u->getNextNonDebugInstruction();
+	Instruction *insPos = u->getNextNode();
 	
 	if (insPos == NULL) {
 		error("here cannot be null");
@@ -80,19 +80,18 @@ void DSWP::insertProduce(Instruction *u, Instruction *v, DType dtype,
 
 		cast->insertBefore(insPos);
 		args.push_back(cast);
-	/* TODO: for true memory dependences, need to send anything or just sync?
-	} else if (dtype == DTRUE) { // true dep
-		error("check mem dep!!");
+	// TODO: for true memory dependences, need to send anything or just sync?
+	// } else if (dtype == DTRUE) { // true dep
+	// 	error("check mem dep!!");
 
-		StoreInst *store = dyn_cast<StoreInst>(u);
-		if (store == NULL) {
-			error("not true dependency!");
-		}
-		BitCastInst *cast = new BitCastInst(store->getOperand(0),
-					Type::getInt8PtrTy(*context), u->getName().str() + "_ptr");
-		cast->insertBefore(insPos);
-		args.push_back(cast);
-	*/
+	// 	StoreInst *store = dyn_cast<StoreInst>(u);
+	// 	if (store == NULL) {
+	// 		error("not true dependency!");
+	// 	}
+	// 	BitCastInst *cast = new BitCastInst(store->getOperand(0),
+	// 				Type::getInt8PtrTy(*context), u->getName().str() + "_ptr");
+	// 	cast->insertBefore(insPos);
+	// 	args.push_back(cast);
 	} else { // others
 		// just send a dummy value for synchronization
 		args.push_back(Constant::getNullValue(Type::getInt64Ty(*context)));
@@ -144,60 +143,83 @@ void DSWP::insertConsume(Instruction *u, Instruction *v, DType dtype,
 		cast->insertBefore(insPos);
 
 		// replace the uses
-		for (Instruction::use_iterator ui = oldu->use_begin(),
-									   ue = oldu->use_end();
-				ui != ue; ++ui) {
-
-			Instruction *user = dyn_cast<Instruction>(*ui);
-			if (user == NULL) {
-				error("used by a non-instruction?");
-			}
-
-			// make sure it's in the same function...
-			if (user->getParent()->getParent() != v->getParent()->getParent()) {
-				continue;
-			}
-
-			// call replaceUses so that it handles phi nodes
-			map<Value *, Value *> reps;
-			reps[oldu] = cast;
-			replaceUses(user, reps);
-		}
-
-	} /* TODO: need to handle true memory dependences more than just syncing?
-	else if (dtype == DTRUE) {	//READ after WRITE
-		error("check mem dep!!");
-
-		if (!isa<LoadInst>(v)) {
-			error("not true dependency");
-		}
-		BitCastInst *cast = new BitCastInst(
-			call, v->getType(), call->getName().str() + "_ptr");
-		cast->insertBefore(v);
-
-		// replace the v with 'cast' in v's thread:
-		// (other thread with be dealed using dependence)
-		for (Instruction::use_iterator ui = v->use_begin(), ue = v->use_end();
-				ui != ue; ui++) {
-			Instruction *user = dyn_cast<Instruction>(*ui);
-
-			if (user == NULL) {
-				error("how could it be NULL");
-			}
-
-		//	int userthread = this->getNewInstAssigned(user);
-			if (user->getParent()->getParent() != v->getParent()->getParent()) {
-				continue;
-			}
-
-			for (unsigned i = 0; i < user->getNumOperands(); i++) {
-				Value * op = user->getOperand(i);
-				if (op == v) {
-					user->setOperand(i, cast);
-				}
+		for (auto U : v->users()){ // U is of type User *
+			if (auto I = dyn_cast<Instruction>(U)) {
+				cout << "entered\n";
+				errs() << "v " << *v << "\n";
+				errs() << "\nFunction" << *I << "\n";
+				//an instruction uses V
+				map<Value *, Value *> reps;
+				// reps[oldu] = cast;
+				Value* v_LHS = dyn_cast<Value>(v);
+				errs() << "v_LHS" << *v_LHS << "\n";
+				reps[v_LHS] = cast;
+				replaceUses(I, reps);
 			}
 		}
-	} */ else {
+
+		// for (Instruction::use_iterator ui = v->use_begin(),
+		// 							   ue = v->use_end();
+		// 		ui != ue; ++ui) {
+		// 	cout << "entered" << endl;
+		// 	Instruction *user = dyn_cast<Instruction>(*ui);
+		// 	if (user == NULL) {
+		// 		error("used by a non-instruction?");
+		// 	}
+
+		// 	// make sure it's in the same function...
+		// 	// cout << "user func name" << u->getParent()->getParent()->getName().str() << endl;
+		// 	// cout << "v func name" << v->getParent()->getParent()->getName().str() << endl;
+		// 	if (user->getParent()->getParent() != v->getParent()->getParent()) {
+		// 		continue;
+		// 	}
+
+		// 	// call replaceUses so that it handles phi nodes
+		// 	// errs() << "replacing\n";
+		// 	// errs() << *user << "\n";
+		// 	// errs() << *u << "\n";
+		// 	// errs() << *v << "\n";
+		// 	map<Value *, Value *> reps;
+		// 	reps[oldu] = cast;
+		// 	// reps[dyn_cast<Value>(v->getOperand(0))] = cast;
+		// 	replaceUses(user, reps);
+		// }
+
+	// } 
+	// TODO: need to handle true memory dependences more than just syncing?
+	// else if (dtype == DTRUE) {	//READ after WRITE
+	// 	error("check mem dep!!");
+
+	// 	if (!isa<LoadInst>(v)) {
+	// 		error("not true dependency");
+	// 	}
+	// 	BitCastInst *cast = new BitCastInst(
+	// 		call, v->getType(), call->getName().str() + "_ptr");
+	// 	cast->insertBefore(v);
+
+	// 	// replace the v with 'cast' in v's thread:
+	// 	// (other thread with be dealed using dependence)
+	// 	for (Instruction::use_iterator ui = v->use_begin(), ue = v->use_end();
+	// 			ui != ue; ui++) {
+	// 		Instruction *user = dyn_cast<Instruction>(*ui);
+
+	// 		if (user == NULL) {
+	// 			error("how could it be NULL");
+	// 		}
+
+	// 	//	int userthread = this->getNewInstAssigned(user);
+	// 		if (user->getParent()->getParent() != v->getParent()->getParent()) {
+	// 			continue;
+	// 		}
+
+	// 		for (unsigned i = 0; i < user->getNumOperands(); i++) {
+	// 			Value * op = user->getOperand(i);
+	// 			if (op == v) {
+	// 				user->setOperand(i, cast);
+	// 			}
+	// 		}
+		// }
+	} else {
 		// nothing to do
 	}
 }

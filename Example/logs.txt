@@ -1,3 +1,7 @@
+run original code
+201 0
+return value: 201
+execution time was 1 ms.
 
 7:                                                ; preds = %15, %1
   %8 = load i32, ptr %3, align 4
@@ -17,37 +21,7 @@
   %11 = add nsw i32 %10, 1
   store i32 %11, ptr %3, align 4
   br label %7, !llvm.loop !6
-  %t0 = load i32, ptr %3, align 4  %t0 = load i32, ptr %3, align 4
-Adding edge fromto 
-  %t0 = load i32, ptr %3, align 4
-Adding edge fromto 
-  store i32 %t10, ptr %3, align 4  %t0 = load i32, ptr %3, align 4  %t1 = load i32, ptr %2, align 4  %t1 = load i32, ptr %2, align 4
-Adding edge fromto 
-  %t1 = load i32, ptr %2, align 4
-Adding edge fromto 
-  %t1 = load i32, ptr %2, align 4  %t1 = load i32, ptr %2, align 4  %t2 = icmp slt i32 %t0, %t1  %t2 = icmp slt i32 %t0, %t1
-Adding edge fromto 
-  %t4 = load i32, ptr %4, align 4  %t4 = load i32, ptr %4, align 4
-Adding edge fromto 
-  %t4 = load i32, ptr %4, align 4
-Adding edge fromto 
-  store i32 %t6, ptr %4, align 4  %t4 = load i32, ptr %4, align 4  %t5 = load i32, ptr %3, align 4  %t5 = load i32, ptr %3, align 4
-Adding edge fromto 
-  %t5 = load i32, ptr %3, align 4
-Adding edge fromto 
-  %t0 = load i32, ptr %3, align 4  %t5 = load i32, ptr %3, align 4  %t6 = add nsw i32 %t4, %t5  %t6 = add nsw i32 %t4, %t5
-Adding edge fromto 
-  store i32 %t6, ptr %4, align 4  %t4 = load i32, ptr %4, align 4  store i32 %t6, ptr %4, align 4
-Adding edge fromto 
-  %t9 = load i32, ptr %3, align 4  %t9 = load i32, ptr %3, align 4
-Adding edge fromto 
-  %t9 = load i32, ptr %3, align 4
-Adding edge fromto 
-  %t5 = load i32, ptr %3, align 4  %t9 = load i32, ptr %3, align 4  %t10 = add nsw i32 %t9, 1  %t10 = add nsw i32 %t9, 1
-Adding edge fromto 
-  store i32 %t10, ptr %3, align 4  %t9 = load i32, ptr %3, align 4  store i32 %t10, ptr %3, align 4
-Adding edge fromto 
-
+  %t0 = load i32, ptr %3, align 4  %t0 = load i32, ptr %3, align 4  %t0 = load i32, ptr %3, align 4  store i32 %t10, ptr %3, align 4  %t0 = load i32, ptr %3, align 4  %t1 = load i32, ptr %2, align 4  %t1 = load i32, ptr %2, align 4  %t1 = load i32, ptr %2, align 4  %t1 = load i32, ptr %2, align 4  %t1 = load i32, ptr %2, align 4  %t2 = icmp slt i32 %t0, %t1  %t2 = icmp slt i32 %t0, %t1  %t4 = load i32, ptr %4, align 4  %t4 = load i32, ptr %4, align 4  %t4 = load i32, ptr %4, align 4  store i32 %t6, ptr %4, align 4  %t4 = load i32, ptr %4, align 4  %t5 = load i32, ptr %3, align 4  %t5 = load i32, ptr %3, align 4  %t5 = load i32, ptr %3, align 4  %t0 = load i32, ptr %3, align 4  %t5 = load i32, ptr %3, align 4  %t6 = add nsw i32 %t4, %t5  %t6 = add nsw i32 %t4, %t5  store i32 %t6, ptr %4, align 4  %t4 = load i32, ptr %4, align 4  store i32 %t6, ptr %4, align 4  %t9 = load i32, ptr %3, align 4  %t9 = load i32, ptr %3, align 4  %t9 = load i32, ptr %3, align 4  %t5 = load i32, ptr %3, align 4  %t9 = load i32, ptr %3, align 4  %t10 = add nsw i32 %t9, 1  %t10 = add nsw i32 %t9, 1  store i32 %t10, ptr %3, align 4  %t9 = load i32, ptr %3, align 4  store i32 %t10, ptr %3, align 4
 tophalf_:
   switch i64 0, label %exitblock [
     i64 0, label %exitblock
@@ -118,32 +92,6 @@ bottomhalf_4:                                     ; preds = %bottomhalf_2, %bott
 exitblock:                                        ; preds = %bottomhalf_, %tophalf_, %bottomhalf_, %tophalf_
   ret void
 }
-
-Adding edge fromto 
-
-Adding edge fromto 
-
-Adding edge fromto 
-
-Adding edge fromto 
-
-Adding edge fromto 
-
-Adding edge fromto 
-
-Adding edge fromto 
-
-Adding edge fromto 
-
-Adding edge fromto 
-
-Adding edge fromto 
-
-Adding edge fromto 
-
-Adding edge fromto 
-
-Adding edge fromto 
 >>Skipping the edge, as it has been added already.
 >>Skipping the edge, as it has been added already.
 >>Skipping the edge, as it has been added already.
@@ -201,11 +149,100 @@ liveout:
 inserting sychronization
 
 SYN: channel 0: t0 -> t0 [0]
+entered
 SYN: channel 1: t11 -> t0 [2]
 SYN: channel 2: t5 -> t5 [0]
+entered
 SYN: channel 3: t0 -> t5 [2]
 SYN: channel 4: t9 -> t9 [0]
+entered
 SYN: channel 5: t5 -> t9 [2]
 SYN: channel 6: t9 -> t11 [2]
 SYN: channel 7: t3 -> t4 [5]
-ERROR: here cannot be null
+SYN: channel 7: t3 -> t5 [5]
+SYN: channel 7: t3 -> t6 [5]
+SYN: channel 7: t3 -> t7 [5]
+SYN: channel 7: t3 -> t8 [5]
+SYN: channel 7: t3 -> t9 [5]
+SYN: channel 7: t3 -> t10 [5]
+SYN: channel 7: t3 -> t11 [5]
+SYN: channel 7: t3 -> t12 [5]
+SYN: channel 7: t3 -> t0 [5]
+SYN: channel 7: t3 -> t1 [5]
+SYN: channel 7: t3 -> t2 [5]
+SYN: channel 7: t3 -> t3 [5]
+begin to delete loop
+run optimized code
+init
+create thread!
+create thread!
+I'm here!
+-- thread id -2001684928 produce in channel 3, element is 0
+join
+We have pushed q size 0
+-- thread id -2001684928 produce in channel 0, element is 0
+We have pushed q size 0
+-- thread id -2001684928 produce in channel 5, element is 0
+We have pushed q size 0
+-- thread id -2001684928 produce in channel 2, element is 0
+We have pushed q size 0
+-- thread id -2001684928 produce in channel 6, element is 0
+We have pushed q size 0
+-- thread id -2001684928 produce in channel 4, element is 0
+We have pushed q size 0
+-- thread id -2001684928 produce in channel 1, element is 0
+We have pushed q size 0
+-- thread id -2001684928 produce in channel 3, element is 0
+We have pushed q size 1
+-- thread id -2001684928 produce in channel 0, element is 1
+We have pushed q size 1
+-- thread id -2001684928 produce in channel 5, element is 0
+We have pushed q size 1
+-- thread id -2001684928 produce in channel 2, element is 1
+We have pushed q size 1
+-- thread id -2001684928 produce in channel 6, element is 0
+We have pushed q size 1
+-- thread id -2001684928 produce in channel 4, element is 1
+We have pushed q size 1
+-- thread id -2001684928 produce in channel 1, element is 0
+We have pushed q size 1
+-- thread id -2001684928 produce in channel 3, element is 0
+We have pushed q size 2
+-- thread id -2001684928 produce in channel 0, element is 2
+We have pushed q size 2
+I'm here!
+We have q size 3
+thread id -2010077632 consume in channel 0, val is 0 
+We have q size 3
+thread id -2010077632 consume in channel 3, val is 0 
+We have q size 2
+thread id -2010077632 consume in channel 2, val is 0 
+We have q size 2
+thread id -2010077632 consume in channel 5, val is 0 
+We have q size 2
+thread id -2010077632 consume in channel 4, val is 0 
+We have q size 2
+thread id -2010077632 consume in channel 6, val is 0 
+We have q size 2
+thread id -2010077632 consume in channel 1, val is 0 
+We have q size 2
+thread id -2010077632 consume in channel 0, val is 1 
+We have q size 2
+thread id -2010077632 consume in channel 3, val is 0 
+We have q size 1
+thread id -2010077632 consume in channel 2, val is 1 
+We have q size 1
+thread id -2010077632 consume in channel 5, val is 0 
+We have q size 1
+thread id -2010077632 consume in channel 4, val is 1 
+We have q size 1
+thread id -2010077632 consume in channel 6, val is 0 
+We have q size 1
+thread id -2010077632 consume in channel 1, val is 0 
+We have q size 1
+thread id -2010077632 consume in channel 0, val is 2 
+We have q size 1
+thread id -2010077632 consume in channel 3, val is 0 
+202 0
+return value: 202
+execution time was 1 ms.

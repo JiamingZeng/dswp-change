@@ -11,6 +11,9 @@
 #include <limits.h>
 #include <math.h>
 
+#include "../runtime/queue.h"
+#include "../runtime/simple_sync.h"
+
 #define N 10000
 
 static unsigned pentagonal(unsigned n);

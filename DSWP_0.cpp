@@ -1,5 +1,6 @@
 //include the public part of DSWP
 #include "DSWP.h"
+#include "include/oneapi/tbb/parallel_for.h"
 
 using namespace llvm;
 using namespace std;

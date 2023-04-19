@@ -8,17 +8,18 @@ static queue_t data_queues[NUM_QUEUES] = {};
 
 
 void sync_produce(unsigned long long elem, int val_id) {
-	//printf("%lld\n", elem);
-	//printf("produce in %d\n", val_id);
+	// printf("%lld\n", elem);
+	pthread_t tid = pthread_self();
+	printf("-- thread id %d produce in channel %d, element is %lld\n", tid, val_id, elem);
 	queue_push(&data_queues[val_id], elem);
 }
 
 unsigned long long sync_consume(int val_id) {
-//	unsigned long long res = queue_pop(&data_queues[val_id]);
-// printf("consume in %d\n", val_id);
-//	printf("%lld\n", res);
-//	return res;
-	return queue_pop(&data_queues[val_id]);
+	pthread_t tid = pthread_self();
+	unsigned long long res = queue_pop(&data_queues[val_id]);
+	printf("thread id %d consume in channel %d, val is %lld \n", tid, val_id, res);
+	return res;
+	// return queue_pop(&data_queues[val_id]);
 }
 
 // called by master thread
