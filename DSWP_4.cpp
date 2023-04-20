@@ -225,14 +225,14 @@ void DSWP::loopSplit(Loop *L) {
 				relIns.insert(inst);
 				// add blocks which the instruction is dependent on
 
-				// const vector<Edge> &edges = rev[inst];
-				// for (vector<Edge>::const_iterator ei = edges.begin(),
-				// 								  ee = edges.end();
-				// 		ei != ee; ei++) {
-				// 	Instruction *dep = ei->v;
-				// 	errs() << "inserted!\n";
-				// 	relbb.insert(dep->getParent());
-				// }
+				const vector<Edge> &edges = rev[inst];
+				for (vector<Edge>::const_iterator ei = edges.begin(),
+												  ee = edges.end();
+						ei != ee; ei++) {
+					Instruction *dep = ei->v;
+					errs() << "inserted!\n";
+					relbb.insert(dep->getParent());
+				}
 			}
 		}
 
@@ -259,8 +259,41 @@ void DSWP::loopSplit(Loop *L) {
 		BasicBlock *newExit = BasicBlock::Create(*context, "new-exit", curFunc);
 
 
-		BBMap[header] = BasicBlock::Create(*context,
-				header->getName().str() + "_" + itoa(i), curFunc, newExit);
+		// BBMap[header] = BasicBlock::Create(*context,
+		// 		header->getName().str() + "_" + itoa(i), curFunc, newExit);
+		// Instruction *ni = AllocaInst(Type::getInt32Ty(*context));;
+		// //add dummy instruction
+		// IntegerType *int_type = Type::getInt64Ty(context);
+		// Value *num = ConstantInt::get(int_type, aTable.value, true);
+		// Value *alloc = new AllocaInst(int_type, aTable.variableName, entry);
+		// StoreInst *ptr = new AllocaInst(num,alloc,false,entry);
+		
+
+		// Type* I = IntegerType::getInt32Ty(module->getContext());
+		// AllocaInst* variable = new AllocaInst(I, 0, "array_size", BBMap[header]);
+
+
+		// Instruction *ai = new AllocaInst(Type::getInt32Ty(*context));
+		errs() << "I am here!!!!";
+		// Instruction *ni = BinaryOperator::CreateMul(Builder.getInt32(0), Builder.getInt32(0), "createmul");
+		// Instruction *newBInst_0 = setBranchInst(curFunc, *relIns.begin(), 1);//product a inst
+		// llvm::BasicBlock *bb = BasicBlock::Create(context, "entrypoint");                      
+		// bb->insertInto(&F,&block);
+		// newBInst_0->insertBefore(bb->front());
+
+		// const Value* value = dyn_cast<ConstantInt>(0);
+		// llvm::BitCastInst *dummyInst = builder.CreateBitCast(value, value->getType(), "dummy");
+		errs() << "I am here!!!!@@@@@@";
+		// BasicBlock* bb = *relbb.begin();
+		// for (BasicBlock::iterator a = header->begin(), b=header->end(); a != b; a++) {
+			// Instruction* aa = dyn_cast<Instruction>(a);
+			// errs() << "Original header";
+			// aa->print(errs());
+			// errs() << "\n";
+		// }
+		// BranchInst::Create(bb, BBMap[header]);
+
+		//BBMap[header]->getInstList().insert(BBMap[header]->begin(), bi);
 		// make copies of the basic blocks
 		for (set<BasicBlock *>::iterator bi = relbb.begin(), be = relbb.end();
 				bi != be; ++bi) {
@@ -310,6 +343,7 @@ void DSWP::loopSplit(Loop *L) {
 					continue;
 				}
 
+				// add code
 				if(relIns.find(inst) == relIns.end() && (isa<StoreInst>(inst) || isa<LoadInst>(inst))){
 					errs() << " avoid duplicate for ";
 					inst->print(errs());

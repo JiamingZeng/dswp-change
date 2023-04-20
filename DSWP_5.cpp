@@ -32,12 +32,15 @@ void DSWP::insertSynchronization(Loop *L) {
 			     << dname[e.u]
 				 << " -> " << dname[e.v]
 				 << " [" << e.dtype << "]" << endl;
-			nu->print(errs());
 			
 			if (isa<BranchInst>(nu)) {
 				continue;
 			}
-			errs() << "produce\n";
+			errs() << "produce u\n";
+			nu->print(errs());
+			errs() << "v\n";
+			nv->print(errs());
+			errs() << "\n";
 			insertProduce(nu, nv, e.dtype, channel, utr, vtr);
 			errs() << "consume\n";
 
@@ -129,21 +132,45 @@ void DSWP::insertConsume(Instruction *u, Instruction *v, DType dtype,
 		CastInst *cast;
 		string name = call->getName().str() + "_val";
 
-		if (u->getType()->isIntegerTy()) {
+
+		// add branch dealing
+		if (isa<BranchInst>(v)) {
+			errs() << "Branch instruction cast!!!!! \n";
+			cast = new TruncInst(call, Type::getInt1Ty(*context), name);
+			// cast->print(errs());
+		}
+		else if (u->getType()->isIntegerTy()) {
+			errs() << "isIntegerTy \n";
 			cast = new TruncInst(call, u->getType(), name);
 		}
 		else if (u->getType()->isFloatingPointTy()) {
+			errs() << "isFloatingPointTy \n";
 			if (u->getType()->isFloatTy())
 				error("cannot deal with double");
 			cast = new BitCastInst(call, u->getType(), name);
 		}
 		else if (u->getType()->isPointerTy()){
+			errs() << "isPointerTy \n";
 			cast = new IntToPtrInst(call, u->getType(), name);
 		} else {
 			error("what's the hell type");
 		}
 
+		errs() << "All the cast ";
+		cast->print(errs());
+		errs() << "\n";
+		errs() << "Where u is ";
+		u->print(errs());
+		errs() << "\n";
+		// errs() << "And type of u is " << u->getType()->print() << "\n";
 		cast->insertBefore(insPos);
+		
+		errs() << "cast is ";
+		cast->print(errs()); 
+		errs() << "\n";
+		errs() << "insPos is ";
+		insPos->print(errs()); 
+		errs() << "\n";
 
 		// replace the uses
 		for (auto U : v->users()){ // U is of type User *
@@ -151,12 +178,17 @@ void DSWP::insertConsume(Instruction *u, Instruction *v, DType dtype,
 				cout << "entered\n";
 				errs() << "v " << *v << "\n";
 				errs() << "\nFunction" << *I << "\n";
+				errs() << "users information";
+				I->print(errs());
 				//an instruction uses V
 				map<Value *, Value *> reps;
 				// reps[oldu] = cast;
-				Value* v_LHS = dyn_cast<Value>(v);
-				errs() << "v_LHS" << *v_LHS << "\n";
-				reps[v_LHS] = cast;
+				Value* u_LHS = dyn_cast<Value>(oldu);
+				errs() << "u_LHS is ";
+				u_LHS->print(errs());
+				errs() << "\n";
+
+				reps[u_LHS] = cast;
 				replaceUses(I, reps);
 			}
 		}
@@ -249,6 +281,7 @@ void DSWP::cleanup(Loop *L, LPPassManager &LPM) {
 			for (BasicBlock::iterator ii = bb->begin(), ie = bb->end();
 					ii != ie; ++ii) {
 				Instruction *inst = dyn_cast<Instruction>(ii);
+				inst->print(errs());
 				if (isa<Instruction>(inst)) {
 					term = dyn_cast<Instruction>(inst);
 					break;
@@ -256,16 +289,18 @@ void DSWP::cleanup(Loop *L, LPPassManager &LPM) {
 			}
 
 			if (term == NULL) {
-				// error("term cannot be null");
-				continue;
+				errs() << "i:" << i;
+				error("term cannot be null");
 			}
 
 			while (true) {
+				errs() << "while true";
 				Instruction *last = &bb->getInstList().back();
 				if (isa<Instruction>(last))
 					break;
 				last->moveBefore(term);
 			}
+			errs() << "break";
 		}
 	}
 
@@ -281,7 +316,8 @@ void DSWP::cleanup(Loop *L, LPPassManager &LPM) {
 
 			BasicBlock::iterator ii = bb->begin(), ie = bb->end();
 			// advance the iterator up to one past first_nonphi
-			while (&(*ii) != first_nonphi) { ++ii; }
+			while (&(*ii) != first_nonphi) { ++ii; errs() << "here";}
+			// errs() << "break out";
 			++ii;
 
 			// move any phi nodes after the first nonphi to before it

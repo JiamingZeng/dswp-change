@@ -1,6 +1,6 @@
 run original code
 30
-execution time was 1 ms.
+execution time was 2 ms.
 >>Skipping the edge, as it has been added already.
 >>Skipping the edge, as it has been added already.
 >>Skipping the edge, as it has been added already.
@@ -77,3 +77,6 @@ SYN: channel 2: t6 -> t8 [5]
 SYN: channel 2: t6 -> t9 [5]
 SYN: channel 2: t6 -> t10 [5]
 SYN: channel 2: t6 -> t11 [5]
+begin to delete loop
+run optimized code
+execution time was 1 ms.

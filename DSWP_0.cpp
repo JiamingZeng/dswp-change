@@ -143,59 +143,40 @@ bool DSWP::initialize(Loop *L) {
 
 
 bool DSWP::runOnLoop(Loop *L, LPPassManager &LPM) {
-	errs() << "runOnLoop123 \n";
 	if (L->getLoopDepth() != 1)	//ONLY care about top level loops
     	return false;
-
+	
 	if (generated.find(L->getHeader()->getParent()) != generated.end())	//this is the generated code
 		return false;
 
-	// cout << "///////////////////////////// we are running on a loop" << endl;
-	errs() << "here!!! \n";
 	bool bad = initialize(L);
 	if (bad) {
 		clear();
 		return false;
 	}
-	errs() << "here!!!! \n";
+	errs() << "Now we are entering a loop \n";
 	buildPDG(L);
-	errs() << "here!!!!! \n";
 	showGraph(L);
-	errs() << "here!!!!!! \n";
 	findSCC(L);
-	errs() << "here!!!!!!! \n";
 
 	if (sccNum == 1) {
 		cout << "only one SCC, can't do nuttin" << endl;
 		clear();
 		return false;
 	}
-	errs() << "here!!!!!!!! \n";
 	showDAG(L);
-	errs() << "here!!!!!!!!! \n";
 	threadPartition(L);
-	errs() << "here!!!!!!!!!! \n";
 	showPartition(L);
-	errs() << "here!!!!!!!!!!! \n";
 	getLiveinfo(L);
-	errs() << "here!!!!!!!!!!!! \n";
-	errs() << "11 \n";
 	showLiveInfo(L);
-	errs() << "here!!!!!!!!!!!!! \n";
-	errs() << "12 \n";
 	getDominators(L);
-	errs() << "here!!!!!!!!!!!!!! \n";
-	errs() << "13 \n";
 	// TODO: should estimate whether splitting was helpful and if not, return
 	//       the unmodified code (like in the paper)
 	preLoopSplit(L);
-	errs() << "14 \n";
 	loopSplit(L);
-	errs() << "15 \n";
 	insertSynchronization(L);
 	cleanup(L, LPM);
 	clear();
-	errs() << "Finish runOnLoop123\n";
 	return true;
 }
 
