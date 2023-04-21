@@ -193,8 +193,7 @@ void DSWP::addEdge(Instruction *u, Instruction *v, DType dtype) {
 		v->print(errs());
 		errs() << "\n";
 	}
-	else
-		cout<<">>Skipping the edge, as it has been added already."<<endl;
+		//cout<<">>Skipping the edge, as it has been added already."<<endl;
 }
 
 bool DSWP::checkEdge(Instruction *u, Instruction *v) {

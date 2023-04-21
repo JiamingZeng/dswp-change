@@ -31,7 +31,7 @@
 using namespace llvm;
 using namespace std;
 
-static const int MAX_THREAD = 5;
+static const int MAX_THREAD = 2;
 
 //REG: register dependency
 //DTRUE: data dependency - read after write
