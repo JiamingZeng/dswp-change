@@ -49,6 +49,9 @@ void DSWP::threadPartition(Loop *L) {
 	}
 
 	for (int i = 0; i < MAX_THREAD; i++) {
+		errs() << "MAX thread";
+		errs() << MAX_THREAD;
+		errs() << "\n";
 		while (!Q.empty()) {
 			QNode top = Q.top(); Q.pop();
 			assigned[top.u] = i;

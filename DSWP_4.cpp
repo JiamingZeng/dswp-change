@@ -444,6 +444,11 @@ void DSWP::loopSplit(Loop *L) {
 				errs() << "i am here !!!" << "\n";
 
 				instMap[i][inst] = newInst;
+				errs() << "thread " << i << " old inst is: ";
+				inst->print(errs());
+				errs() << "\n new inst is: ";
+				newInst->print(errs());
+				errs() << "\n";
 				newInstAssigned[newInst] = i;
 				newToOld[newInst] = inst;
 				// newInst->dump();
@@ -526,6 +531,9 @@ void DSWP::loopSplit(Loop *L) {
 			}
 
 			instMap[i][livein[j]] = ele_val;
+			// errs() << "thread " << i << " has livein : "<< j << " ele_val ";
+			// ele_val->print(errs());
+			// errs() << "\n";
 		}
 
 		errs() << "17\n";

@@ -118,23 +118,10 @@ void DSWP::insertProduce(Instruction *u, Instruction *v, DType dtype,
 void DSWP::insertConsume(Instruction *u, Instruction *v, DType dtype,
 					     int channel, int uthread, int vthread) {
 	Instruction *oldu = dyn_cast<Instruction>(newToOld[u]);
-	// Instruction *insPos = placeEquivalents[vthread][oldu];
-	// if (insPos == NULL) {
-	// 	if (instMap[vthread][oldu] == NULL) {
-	// 		errs() << "no old u\n";
-	// 		return;
-	// 	}
-	// 	insPos = dyn_cast<Instruction>(instMap[vthread][oldu]);
-	// 	if (insPos == NULL) {
-	// 		error("can't insert nowhere");
-	// 	}
-	// }
 
 	Instruction *insPos = v;
 	Instruction *oldv = dyn_cast<Instruction>(newToOld[v]);
 	
-
-	// call sync_consume(channel)
 	Function *fun = module->getFunction("sync_consume");
 	vector<Value *> args;
 	args.push_back(ConstantInt::get(Type::getInt32Ty(*context), channel));
@@ -143,7 +130,6 @@ void DSWP::insertConsume(Instruction *u, Instruction *v, DType dtype,
 	if (dtype == REG) {
 		CastInst *cast;
 		string name = call->getName().str() + "_val";
-
 
 		// add branch dealing
 		if (u->getType()->isIntegerTy()) {
@@ -199,28 +185,63 @@ void DSWP::insertConsume(Instruction *u, Instruction *v, DType dtype,
 
 		Value* replace_inst = instMap[vthread][oldu];
 		Instruction* replace_inst_use;
-		if (replace_inst == NULL) replace_inst_use = oldu;
-		else replace_inst_use = dyn_cast<Instruction>(replace_inst);
+		if (replace_inst == NULL) 
+			replace_inst_use = oldu;
+		else 
+			replace_inst_use = dyn_cast<Instruction>(replace_inst);
 		// if (instMap[vthread][oldu]->users())
+		
 		if(!flag){
 			errs() << "33\n";
 			for (auto U : replace_inst_use->users()){ // U is of type User *
 				if (auto I = dyn_cast<Instruction>(U)) {
-					cout << "entered\n";
-					errs() << "v " << *v << "\n";
-					errs() << "\nFunction" << *I << "\n";
-					errs() << "users information";
-					I->print(errs());
-					//an instruction uses V
-					map<Value *, Value *> reps;
-					// reps[oldu] = cast;
-					Value* u_LHS = dyn_cast<Value>(dyn_cast<Instruction>(replace_inst_use));
-					errs() << "u_LHS is 77788";
-					u_LHS->print(errs());
+					errs() << "Name:  123123123";
+					errs() << I->getName();
 					errs() << "\n";
+					errs() << "Name: !!!!!!!!!!!!!!";
+					errs() << I->getParent() -> getParent()->getName() << "\n";
 
-					reps[u_LHS] = cast;
-					replaceUses(I, reps);
+					// size_t lengthName = I->getParent() -> getParent()->getName().find('_');
+					// if (lengthName != StringRef::npos) {
+					// 	errs() << "lengthName: " << lengthName;
+					// 	errs() << "\n";
+					// 	if (!I->getName().empty() && I->getName().size() > 2)
+					// 		errs() << I->getName().back();
+					// }
+					// if (!I->getName() && I->getName().back() == std::to_string(vthread)[0]) {
+					// 	errs() << "I am here!!! \n";
+					// 	errs() << I->getName().back() << "\n";
+					// } else {
+					// 	errs() << "I am here!!!!! \n";
+					// 	errs() << std::to_string(vthread)[0] << "\n";
+					// }
+					// if (!I->getName().empty()) {
+					// 	errs() << "Number: " << I->getName().back()-'0' << "\n";
+					// 	errs() << "vthread: " << vthread << "\n";
+					// 	errs() << "lengthName: " << lengthName << "\n";
+					// 	errs() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << "\n";
+					// 	errs() << (lengthName != StringRef::npos);
+					// 	errs() << "\n";
+					// 	errs() << (I->getName().back()-'0' == vthread);
+					// 	errs() << "\n";
+					// }
+					if (I->getParent()->getParent()->getName().back()-'0' == vthread) {
+						errs() << "entered\n";
+						errs() << "v " << *v << "\n";
+						errs() << "\nFunction" << *I << "\n";
+						errs() << "users information";
+						I->print(errs());
+						//an instruction uses V
+						map<Value *, Value *> reps;
+						// reps[oldu] = cast;
+						Value* u_LHS = dyn_cast<Value>(dyn_cast<Instruction>(replace_inst_use));
+						errs() << "u_LHS is 77788";
+						u_LHS->print(errs());
+						errs() << "\n";
+
+						reps[u_LHS] = cast;
+						replaceUses(I, reps);
+					}
 				}
 			}
 			errs() << "finish 33\n";

@@ -1,10 +1,10 @@
 # correct code
 # opt -enable-new-pm=0 -load /n/eecs583a/home/zjiaming/dswp-change/DSWP.so -dswp obj.o -o out.o
 
-clang -c -fPIE problem1.c -o obj.o -emit-llvm
+clang -O0 -c -fPIE problem1.c -o obj.o -emit-llvm
 llvm-dis obj.o
 llc -filetype=obj obj.o -o test.o
-clang test.o -o test.out
+clang -O0 test.o -o test.out
 
 echo 'run original code'
 start_time=$(date +%s%N | cut -b1-13)

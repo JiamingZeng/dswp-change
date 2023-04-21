@@ -1,6 +1,20 @@
+g++ -fPIC -rdynamic -I/usr/local/include -std=c++14   -fno-exceptions -fno-rtti -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -g -O0   -c -o DSWP_0.o DSWP_0.cpp
+g++ -fPIC -rdynamic -I/usr/local/include -std=c++14   -fno-exceptions -fno-rtti -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -g -O0   -c -o DSWP_1.o DSWP_1.cpp
+g++ -fPIC -rdynamic -I/usr/local/include -std=c++14   -fno-exceptions -fno-rtti -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -g -O0   -c -o DSWP_2.o DSWP_2.cpp
+g++ -fPIC -rdynamic -I/usr/local/include -std=c++14   -fno-exceptions -fno-rtti -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -g -O0   -c -o DSWP_3.o DSWP_3.cpp
+g++ -fPIC -rdynamic -I/usr/local/include -std=c++14   -fno-exceptions -fno-rtti -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -g -O0   -c -o DSWP_4.o DSWP_4.cpp
+g++ -fPIC -rdynamic -I/usr/local/include -std=c++14   -fno-exceptions -fno-rtti -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -g -O0   -c -o DSWP_5.o DSWP_5.cpp
+g++ -fPIC -rdynamic -I/usr/local/include -std=c++14   -fno-exceptions -fno-rtti -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -g -O0   -c -o DSWP_DEBUG.o DSWP_DEBUG.cpp
+g++ -fPIC -rdynamic -I/usr/local/include -std=c++14   -fno-exceptions -fno-rtti -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -g -O0   -c -o Utils.o Utils.cpp
+g++ -fPIC -rdynamic -I/usr/local/include -std=c++14   -fno-exceptions -fno-rtti -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -g -O0   -c -o raw_os_ostream.o raw_os_ostream.cpp
+g++ -dylib -shared -g -O0  DSWP_0.o DSWP_1.o DSWP_2.o DSWP_3.o DSWP_4.o DSWP_5.o DSWP_DEBUG.o Utils.o raw_os_ostream.o -o DSWP.so
+cc -MMD   -c -pthread runtime/queue.c -o runtime/queue.o
+cc -MMD   -c -pthread runtime/simple_sync.c -o runtime/simple_sync.o
+cc -MMD   -c -pthread runtime/runtime_debug.c -o runtime/runtime_debug.o
+ar rcs runtime/libruntime.a runtime/queue.o runtime/simple_sync.o runtime/runtime_debug.o
 run original code
 1977099539
-execution time was 3 ms.
+execution time was 2 ms.
 >>Skipping the edge, as it has been added already.
 >>Skipping the edge, as it has been added already.
 >>Skipping the edge, as it has been added already.
@@ -237,14 +251,16 @@ SCC #21: 0
 SCC #22: 7
 SCC #23: 7
 SCC #24: 5
-latency info:188 47
+latency info:188 37
 part 0 size: 2
 part 1 size: 10
 part 2 size: 3
 part 3 size: 10
+part 4 size: 0
 live variable information
 livein:   							
 liveout:  
+WARNING: no related blocks, so doing a nothing function
 inserting sychronization
 
 SYN: channel 0: t1 -> t2 [0]
@@ -321,7 +337,8 @@ I'm here!
 I'm here!
 create thread!
 I'm here!
-join
+create thread!
 I'm here!
+join
 1977099539
-execution time was 170 ms.
+execution time was 147 ms.

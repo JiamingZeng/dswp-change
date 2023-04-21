@@ -35,7 +35,7 @@ void DSWP::findSCC(Loop *L) {
 			sccNum++;
 		}
 	}
-
+	
 	cout<<">>Successfully computed SCCs, with sccNum = "<<sccNum<<endl<<endl;
 }
 
