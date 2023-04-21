@@ -53,12 +53,20 @@ void DSWP::insertSynchronization(Loop *L) {
 
 void DSWP::insertProduce(Instruction *u, Instruction *v, DType dtype,
 					     int channel, int uthread, int vthread) {
+	Instruction *oldu = dyn_cast<Instruction>(newToOld[u]);	
 	Function *fun = module->getFunction("sync_produce");
 	vector<Value *> args;
 
 	errs() << "output";
 	Instruction *insPos = u->getNextNode();
-	
+	Instruction* insPos1 = placeEquivalents[uthread][oldu];
+	// if(insPos1 == NULL){
+	// 	if (instMap[uthread][oldu] == NULL) {
+	// 		errs() << "no old u111\n";
+	// 		return;
+	// 	}
+	// }
+
 	if (insPos == NULL) {
 		error("here cannot be null");
 	}
@@ -110,17 +118,21 @@ void DSWP::insertProduce(Instruction *u, Instruction *v, DType dtype,
 void DSWP::insertConsume(Instruction *u, Instruction *v, DType dtype,
 					     int channel, int uthread, int vthread) {
 	Instruction *oldu = dyn_cast<Instruction>(newToOld[u]);
-	Instruction *insPos = placeEquivalents[vthread][oldu];
-	if (insPos == NULL) {
-		if (instMap[vthread][oldu] == NULL) {
-			errs() << "no old u";
-			return;
-		}
-		insPos = dyn_cast<Instruction>(instMap[vthread][oldu]);
-		if (insPos == NULL) {
-			error("can't insert nowhere");
-		}
-	}
+	// Instruction *insPos = placeEquivalents[vthread][oldu];
+	// if (insPos == NULL) {
+	// 	if (instMap[vthread][oldu] == NULL) {
+	// 		errs() << "no old u\n";
+	// 		return;
+	// 	}
+	// 	insPos = dyn_cast<Instruction>(instMap[vthread][oldu]);
+	// 	if (insPos == NULL) {
+	// 		error("can't insert nowhere");
+	// 	}
+	// }
+
+	Instruction *insPos = v;
+	Instruction *oldv = dyn_cast<Instruction>(newToOld[v]);
+	
 
 	// call sync_consume(channel)
 	Function *fun = module->getFunction("sync_consume");
@@ -134,12 +146,7 @@ void DSWP::insertConsume(Instruction *u, Instruction *v, DType dtype,
 
 
 		// add branch dealing
-		if (isa<BranchInst>(v)) {
-			errs() << "Branch instruction cast!!!!! \n";
-			cast = new TruncInst(call, Type::getInt1Ty(*context), name);
-			// cast->print(errs());
-		}
-		else if (u->getType()->isIntegerTy()) {
+		if (u->getType()->isIntegerTy()) {
 			errs() << "isIntegerTy \n";
 			cast = new TruncInst(call, u->getType(), name);
 		}
@@ -164,8 +171,9 @@ void DSWP::insertConsume(Instruction *u, Instruction *v, DType dtype,
 		errs() << "\n";
 		// errs() << "And type of u is " << u->getType()->print() << "\n";
 		cast->insertBefore(insPos);
+		// cast->insertBefore(v);
 		
-		errs() << "cast is ";
+		errs() << "cast is";
 		cast->print(errs()); 
 		errs() << "\n";
 		errs() << "insPos is ";
@@ -173,25 +181,51 @@ void DSWP::insertConsume(Instruction *u, Instruction *v, DType dtype,
 		errs() << "\n";
 
 		// replace the uses
-		for (auto U : v->users()){ // U is of type User *
-			if (auto I = dyn_cast<Instruction>(U)) {
-				cout << "entered\n";
-				errs() << "v " << *v << "\n";
-				errs() << "\nFunction" << *I << "\n";
-				errs() << "users information";
-				I->print(errs());
-				//an instruction uses V
-				map<Value *, Value *> reps;
-				// reps[oldu] = cast;
-				Value* u_LHS = dyn_cast<Value>(oldu);
-				errs() << "u_LHS is ";
-				u_LHS->print(errs());
-				errs() << "\n";
+		bool flag = false;
 
-				reps[u_LHS] = cast;
-				replaceUses(I, reps);
+
+		// for (unsigned i = 0; i < v->getNumOperands(); ++i) {
+		// 	errs() << "11\n";
+    	// 	llvm::Value *operand = v->getOperand(i);
+    	// 	if (isa<UndefValue>(operand)) {
+		// 		errs() << "it is not defined!\n";
+      	// 		flag = true;
+		// 		User* v_usr = dyn_cast<User>(v);
+		// 		Value* cast_val = dyn_cast<Value>(cast);
+		// 		v_usr->setOperand(i, cast_val);
+    	// 	}
+  		// }
+		// errs() << "22\n";
+
+		Value* replace_inst = instMap[vthread][oldu];
+		Instruction* replace_inst_use;
+		if (replace_inst == NULL) replace_inst_use = oldu;
+		else replace_inst_use = dyn_cast<Instruction>(replace_inst);
+		// if (instMap[vthread][oldu]->users())
+		if(!flag){
+			errs() << "33\n";
+			for (auto U : replace_inst_use->users()){ // U is of type User *
+				if (auto I = dyn_cast<Instruction>(U)) {
+					cout << "entered\n";
+					errs() << "v " << *v << "\n";
+					errs() << "\nFunction" << *I << "\n";
+					errs() << "users information";
+					I->print(errs());
+					//an instruction uses V
+					map<Value *, Value *> reps;
+					// reps[oldu] = cast;
+					Value* u_LHS = dyn_cast<Value>(dyn_cast<Instruction>(replace_inst_use));
+					errs() << "u_LHS is 77788";
+					u_LHS->print(errs());
+					errs() << "\n";
+
+					reps[u_LHS] = cast;
+					replaceUses(I, reps);
+				}
 			}
+			errs() << "finish 33\n";
 		}
+
 
 		// for (Instruction::use_iterator ui = v->use_begin(),
 		// 							   ue = v->use_end();

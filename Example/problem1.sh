@@ -13,7 +13,7 @@ end_time=$(date +%s%N | cut -b1-13)
 echo execution time was `expr $end_time - $start_time` ms.
 
 
-opt -enable-new-pm=0 -load /n/eecs583a/home/zjiaming/dswp-change/DSWP.so -dswp obj.o -o out.o
+opt -enable-new-pm=0 -load ~/dswp-change/DSWP.so -dswp obj.o -o out.o
 # ld -o linked -filetype=obj out.o ../runtime/queue.o ../runtime/simple_sync.o -lc -shared
 
 llvm-dis out.o

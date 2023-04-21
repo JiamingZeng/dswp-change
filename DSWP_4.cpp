@@ -344,12 +344,13 @@ void DSWP::loopSplit(Loop *L) {
 				}
 
 				// add code
-				if(relIns.find(inst) == relIns.end() && (isa<StoreInst>(inst) || isa<LoadInst>(inst))){
+				if(relIns.find(inst) == relIns.end() && !isa<BranchInst>(inst) ){
 					errs() << " avoid duplicate for ";
 					inst->print(errs());
 					errs() << " \n";
 					continue;
 				}
+
 				Instruction *newInst = inst->clone();
 				if (inst->hasName()) {
 					newInst->setName(inst->getName() + "_" + itoa(i));
