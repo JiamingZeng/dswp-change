@@ -2,7 +2,7 @@
 #include "runtime_debug.h"
 
 void showPlace() {
-	printf("I'm here!\n");
+	// printf("I'm here!\n");
 }
 
 void showPtr(void *elem) {

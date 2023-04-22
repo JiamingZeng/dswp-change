@@ -8,7 +8,6 @@ using namespace std;
 
 
 void DSWP::preLoopSplit(Loop *L) {
-	// Makes the loop-replacement block that calls the worker threads.
 	allFunc.clear();
 
 
@@ -18,13 +17,6 @@ void DSWP::preLoopSplit(Loop *L) {
 	replaceBlock = BasicBlock::Create(*context, "loop-replace", func);
 	BranchInst *brInst = BranchInst::Create(exit, replaceBlock);
 	replaceBlock->moveBefore(exit);
-
-	// sanity check: the exit branch isn't in the loop
-	// you know, in case we don't trust Loop::getExitBlock or something
-	// NOTE: kind of pointless
-	if (L->contains(exit)) {
-		error("don't know why");
-	}
 
 	// point branches to the loop header to replaceBlock instead
 	for (pred_iterator PI = pred_begin(header); PI != pred_end(header); ++PI) {
@@ -115,7 +107,6 @@ void DSWP::preLoopSplit(Loop *L) {
 		GetElementPtrInst *ele_addr = GetElementPtrInst::CreateInBounds(
 			argStructTy, argStruct, gep_args, livein[i]->getName() + "_argptr", brInst);
 
-		// actually store it
 		StoreInst *storeVal = new StoreInst(livein[i], ele_addr, brInst);
 	}
 	// NOTE: the output argument struct is left uninitialized
@@ -198,7 +189,6 @@ void DSWP::loopSplit(Loop *L) {
 	//check for each partition, find relevant blocks, set could auto deduplicate
 
 	for (int i = 0; i < MAX_THREAD; i++) {
-		errs() << "Partition " << i << " : ";
 		// cout << "// Creating function for thread " + itoa(i) << endl;
 
 		// create function body for each thread
@@ -211,7 +201,6 @@ void DSWP::loopSplit(Loop *L) {
 		set<BasicBlock *> relbb;
 		set<Instruction *> relIns;
 		//relbb.insert(header);
-		errs() << "figure out which blocks we use or are dependent on in this thread \n";
 		for (vector<int>::iterator ii = part[i].begin(), ie = part[i].end();
 				ii != ie; ++ii) {
 			int scc = *ii;
@@ -220,8 +209,6 @@ void DSWP::loopSplit(Loop *L) {
 					iii != iie; ++iii) {
 				Instruction *inst = *iii;
 				relbb.insert(inst->getParent());
-				errs() << "REl ins";
-				inst->print(errs());
 				relIns.insert(inst);
 				// add blocks which the instruction is dependent on
 
@@ -230,15 +217,13 @@ void DSWP::loopSplit(Loop *L) {
 												  ee = edges.end();
 						ei != ee; ei++) {
 					Instruction *dep = ei->v;
-					errs() << "inserted!\n";
+					// errs() << "inserted!\n";
 					relbb.insert(dep->getParent());
 				}
 			}
 		}
 
 		if (relbb.empty()) {
-			errs() << "WARNING: no related blocks, so doing a nothing function\n";
-			cout << "WARNING: no related blocks, so doing a nothing function" << endl;
 			BasicBlock *newBody =
 				BasicBlock::Create(*context, "do-nothing", curFunc);
 			ReturnInst *newRet = ReturnInst::Create(
@@ -251,47 +236,12 @@ void DSWP::loopSplit(Loop *L) {
 		/*
 		 * Create the new blocks for the new function, including entry and exit
 		 */
-		errs() << "Create the new blocks for the new function, including entry and exit \n";
 		map<BasicBlock *, BasicBlock *> BBMap; // map old blocks to new block
 
 		BasicBlock *newEntry =
 				BasicBlock::Create(*context, "new-entry", curFunc);
 		BasicBlock *newExit = BasicBlock::Create(*context, "new-exit", curFunc);
 
-
-		// BBMap[header] = BasicBlock::Create(*context,
-		// 		header->getName().str() + "_" + itoa(i), curFunc, newExit);
-		// Instruction *ni = AllocaInst(Type::getInt32Ty(*context));;
-		// //add dummy instruction
-		// IntegerType *int_type = Type::getInt64Ty(context);
-		// Value *num = ConstantInt::get(int_type, aTable.value, true);
-		// Value *alloc = new AllocaInst(int_type, aTable.variableName, entry);
-		// StoreInst *ptr = new AllocaInst(num,alloc,false,entry);
-		
-
-		// Type* I = IntegerType::getInt32Ty(module->getContext());
-		// AllocaInst* variable = new AllocaInst(I, 0, "array_size", BBMap[header]);
-
-
-		// Instruction *ai = new AllocaInst(Type::getInt32Ty(*context));
-		errs() << "I am here!!!!";
-		// Instruction *ni = BinaryOperator::CreateMul(Builder.getInt32(0), Builder.getInt32(0), "createmul");
-		// Instruction *newBInst_0 = setBranchInst(curFunc, *relIns.begin(), 1);//product a inst
-		// llvm::BasicBlock *bb = BasicBlock::Create(context, "entrypoint");                      
-		// bb->insertInto(&F,&block);
-		// newBInst_0->insertBefore(bb->front());
-
-		// const Value* value = dyn_cast<ConstantInt>(0);
-		// llvm::BitCastInst *dummyInst = builder.CreateBitCast(value, value->getType(), "dummy");
-		errs() << "I am here!!!!@@@@@@";
-		// BasicBlock* bb = *relbb.begin();
-		// for (BasicBlock::iterator a = header->begin(), b=header->end(); a != b; a++) {
-			// Instruction* aa = dyn_cast<Instruction>(a);
-			// errs() << "Original header";
-			// aa->print(errs());
-			// errs() << "\n";
-		// }
-		// BranchInst::Create(bb, BBMap[header]);
 
 		//BBMap[header]->getInstList().insert(BBMap[header]->begin(), bi);
 		// make copies of the basic blocks
@@ -304,12 +254,6 @@ void DSWP::loopSplit(Loop *L) {
 		BBMap[predecessor] = newEntry;
 		BBMap[exit] = newExit;
 
-		if (BBMap[header] == NULL) {
-			errs() << "Added";
-			error("this must be a error early in dependency analysis stage");
-			errs() << "is null";
-		}
-
 		// errs() << "this must be a error early in dependency analysis stage \n";
 		// branch from the entry block to the new header
 		BranchInst *newToHeader = BranchInst::Create(BBMap[header], newEntry);
@@ -321,7 +265,6 @@ void DSWP::loopSplit(Loop *L) {
 		/*
 		 * copy over the instructions in each block
 		 */
-		errs() << "copy over the instructions in each block123 \n";
 		typedef SmallVector<Instruction *, 5> to_point_t;
 		to_point_t instructions_to_point;
 		for (set<BasicBlock *>::iterator bi = relbb.begin(), be = relbb.end();
@@ -345,9 +288,9 @@ void DSWP::loopSplit(Loop *L) {
 
 				// add code
 				if(relIns.find(inst) == relIns.end() && !isa<BranchInst>(inst) ){
-					errs() << " avoid duplicate for ";
-					inst->print(errs());
-					errs() << " \n";
+					// errs() << " avoid duplicate for ";
+					// inst->print(errs());
+					// errs() << " \n";
 					continue;
 				}
 
@@ -375,12 +318,11 @@ void DSWP::loopSplit(Loop *L) {
 
 						// if we branched to a block not in this thread,
 						// go to the next post-dominator
-						// NOTE: right?
 						while (newBB == NULL) {
 							oldBB = postidom[oldBB];
 							newBB = BBMap[oldBB];
 							if (oldBB == NULL) {
-								error("postdominator info seems broken :(");
+								// error("postdominator info seems broken :(");
 								break;
 							}
 						}
@@ -422,7 +364,7 @@ void DSWP::loopSplit(Loop *L) {
 							oldBB = idom[oldBB];
 							newBB = BBMap[oldBB];
 							if (oldBB == NULL) {
-								error("dominator info seems broken :(");
+								// error("dominator info seems broken :(");
 								break;
 							}
 						}
@@ -441,14 +383,7 @@ void DSWP::loopSplit(Loop *L) {
 				// inst->print(errs());
 				// errs() << "\n";
 				
-				errs() << "i am here !!!" << "\n";
-
 				instMap[i][inst] = newInst;
-				errs() << "thread " << i << " old inst is: ";
-				inst->print(errs());
-				errs() << "\n new inst is: ";
-				newInst->print(errs());
-				errs() << "\n";
 				newInstAssigned[newInst] = i;
 				newToOld[newInst] = inst;
 				// newInst->dump();
@@ -456,10 +391,6 @@ void DSWP::loopSplit(Loop *L) {
 				
 
 				NBB->getInstList().push_back(newInst);
-				errs() << "All the instruction";
-				newInst->print(errs());
-				errs() <<"\n";
-
 				for (to_point_t::iterator pi = instructions_to_point.begin(),
 										  pe = instructions_to_point.end();
 						pi != pe; ++pi) {
@@ -469,26 +400,19 @@ void DSWP::loopSplit(Loop *L) {
 				instructions_to_point.clear();
 			}
 
-			if (!instructions_to_point.empty()) {
-				error("didn't point all the instructions we wanted to");
-			}
+			// if (!instructions_to_point.empty()) {
+			// 	error("didn't point all the instructions we wanted to");
+			// }
 		}
-		// errs() << "copy over the instructions in each block \n";
 		/*
 		 * Load the arguments, replacing livein variables
 		 */
-		// Function::ArgumentListType &arglist = curFunc->getArgumentList();
-		// Function::getArgumentList()
-		// vector<Argument*> arglist;
-		// for (Argument* arg_start  = curFunc->arg_begin(); arg_start != curFunc->arg_end(); curFunc++){
-		// 	arglist.push_back(arg_start);
+
+		// if (curFunc->arg_size() != 1) {
+		// 	errs() <<"argument size error!";
+		// 	error("argument size error!");
 		// }
-		// iterator_range<llvm::Function::arg_iterator> arglist = curFunc->args();
-		if (curFunc->arg_size() != 1) {
-			errs() <<"argument size error!";
-			error("argument size error!");
-		}
-		errs() << "find arg lists \n";
+		// errs() << "find arg lists \n";
 		Argument *args = curFunc->arg_begin(); //the function only have one argmument
 
 		Function *showPlace = module->getFunction("showPlace");
@@ -500,43 +424,25 @@ void DSWP::loopSplit(Loop *L) {
 		castArgs->insertBefore(newToHeader);
 
 		for (unsigned int j = 0, je = livein.size(); j < je; j++) {
-			errs() << "Handling argument: " << livein[j]->getName().str() << "\n";
-
 			// get pointer to the jth argument
 			vector<Value *> gep_args;
 			gep_args.push_back(ConstantInt::get(Type::getInt64Ty(*context), 0));
 			gep_args.push_back(ConstantInt::get(Type::getInt32Ty(*context), j));
-			errs() << "15\n";
 			GetElementPtrInst* ele_addr = GetElementPtrInst::Create(
 				argStructTy, castArgs, gep_args, livein[j]->getName() + "_arg", newToHeader);
-			errs() << "18\n";
 
 			// load it
 			LoadInst *ele_val = new LoadInst(ele_addr->getType(), ele_addr, "", newToHeader);
 			ele_val->setAlignment(Align(8)); // TODO: do we want this?
 			ele_val->setName(livein[j]->getName().str() + "_val");
-			errs() << "16\n";
-			// ele_val->insertBefore(newToHeader);
-
-			/*
-			vector<Value *> showArg;
-			showArg.push_back(ele_val);
-			Function *show = module->getFunction("showValue");
-			CallInst *callShow = CallInst::Create(show, showArg);
-			callShow->insertBefore(newToHeader);
-			*/
 
 			if (ele_val->getType() != livein[j]->getType()) {
 				error("broken type for " + livein[j]->getName().str());
 			}
 
 			instMap[i][livein[j]] = ele_val;
-			// errs() << "thread " << i << " has livein : "<< j << " ele_val ";
-			// ele_val->print(errs());
-			// errs() << "\n";
 		}
 
-		errs() << "17\n";
 		/*
 		 * Replace the use of instruction def in the function.
 		 * reg dep should be finished in insert syn
@@ -682,22 +588,10 @@ void DSWP::insertSynchronization(Loop *L) {
 			if (nu == NULL || nv == NULL)
 				continue;
 
-			cout << "SYN: channel " << channel << ": "
-			     << dname[e.u]
-				 << " -> " << dname[e.v]
-				 << " [" << e.dtype << "]" << endl;
-			
 			if (isa<BranchInst>(nu)) {
 				continue;
 			}
-			errs() << "produce u\n";
-			nu->print(errs());
-			errs() << "v\n";
-			nv->print(errs());
-			errs() << "\n";
 			insertProduce(nu, nv, e.dtype, channel, utr, vtr);
-			errs() << "consume\n";
-
 			insertConsume(nu, nv, e.dtype, channel, utr, vtr);
 			channel++;
 		}
@@ -711,15 +605,8 @@ void DSWP::insertProduce(Instruction *u, Instruction *v, DType dtype,
 	Function *fun = module->getFunction("sync_produce");
 	vector<Value *> args;
 
-	errs() << "output";
 	Instruction *insPos = u->getNextNode();
 	Instruction* insPos1 = placeEquivalents[uthread][oldu];
-	// if(insPos1 == NULL){
-	// 	if (instMap[uthread][oldu] == NULL) {
-	// 		errs() << "no old u111\n";
-	// 		return;
-	// 	}
-	// }
 
 	if (insPos == NULL) {
 		error("here cannot be null");
@@ -744,7 +631,6 @@ void DSWP::insertProduce(Instruction *u, Instruction *v, DType dtype,
 
 		cast->insertBefore(insPos);
 		args.push_back(cast);
-	// TODO: for true memory dependences, need to send anything or just sync?
 	} else if (dtype == DTRUE) { // true dep
 		error("check mem dep!!");
 
@@ -803,39 +689,9 @@ void DSWP::insertConsume(Instruction *u, Instruction *v, DType dtype,
 			error("what's the hell type");
 		}
 
-		errs() << "All the cast ";
-		cast->print(errs());
-		errs() << "\n";
-		errs() << "Where u is ";
-		u->print(errs());
-		errs() << "\n";
-		// errs() << "And type of u is " << u->getType()->print() << "\n";
 		cast->insertBefore(insPos);
-		// cast->insertBefore(v);
-		
-		errs() << "cast is";
-		cast->print(errs()); 
-		errs() << "\n";
-		errs() << "insPos is ";
-		insPos->print(errs()); 
-		errs() << "\n";
-
 		// replace the uses
 		bool flag = false;
-
-
-		// for (unsigned i = 0; i < v->getNumOperands(); ++i) {
-		// 	errs() << "11\n";
-    	// 	llvm::Value *operand = v->getOperand(i);
-    	// 	if (isa<UndefValue>(operand)) {
-		// 		errs() << "it is not defined!\n";
-      	// 		flag = true;
-		// 		User* v_usr = dyn_cast<User>(v);
-		// 		Value* cast_val = dyn_cast<Value>(cast);
-		// 		v_usr->setOperand(i, cast_val);
-    	// 	}
-  		// }
-		// errs() << "22\n";
 
 		Value* replace_inst = instMap[vthread][oldu];
 		Instruction* replace_inst_use;
@@ -843,97 +699,25 @@ void DSWP::insertConsume(Instruction *u, Instruction *v, DType dtype,
 			replace_inst_use = oldu;
 		else 
 			replace_inst_use = dyn_cast<Instruction>(replace_inst);
-		// if (instMap[vthread][oldu]->users())
 		
 		if(!flag){
 			errs() << "33\n";
 			for (auto U : replace_inst_use->users()){ // U is of type User *
 				if (auto I = dyn_cast<Instruction>(U)) {
-					errs() << "Name:  123123123";
-					errs() << I->getName();
-					errs() << "\n";
-					errs() << "Name: !!!!!!!!!!!!!!";
-					errs() << I->getParent() -> getParent()->getName() << "\n";
-
-					// size_t lengthName = I->getParent() -> getParent()->getName().find('_');
-					// if (lengthName != StringRef::npos) {
-					// 	errs() << "lengthName: " << lengthName;
-					// 	errs() << "\n";
-					// 	if (!I->getName().empty() && I->getName().size() > 2)
-					// 		errs() << I->getName().back();
-					// }
-					// if (!I->getName() && I->getName().back() == std::to_string(vthread)[0]) {
-					// 	errs() << "I am here!!! \n";
-					// 	errs() << I->getName().back() << "\n";
-					// } else {
-					// 	errs() << "I am here!!!!! \n";
-					// 	errs() << std::to_string(vthread)[0] << "\n";
-					// }
-					// if (!I->getName().empty()) {
-					// 	errs() << "Number: " << I->getName().back()-'0' << "\n";
-					// 	errs() << "vthread: " << vthread << "\n";
-					// 	errs() << "lengthName: " << lengthName << "\n";
-					// 	errs() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << "\n";
-					// 	errs() << (lengthName != StringRef::npos);
-					// 	errs() << "\n";
-					// 	errs() << (I->getName().back()-'0' == vthread);
-					// 	errs() << "\n";
-					// }
 					if (I->getParent()->getParent()->getName().back()-'0' == vthread) {
-						errs() << "entered\n";
-						errs() << "v " << *v << "\n";
-						errs() << "\nFunction" << *I << "\n";
-						errs() << "users information";
-						I->print(errs());
 						//an instruction uses V
 						map<Value *, Value *> reps;
 						// reps[oldu] = cast;
 						Value* u_LHS = dyn_cast<Value>(dyn_cast<Instruction>(replace_inst_use));
-						errs() << "u_LHS is 77788";
-						u_LHS->print(errs());
-						errs() << "\n";
-
 						reps[u_LHS] = cast;
 						replaceUses(I, reps);
 					}
 				}
 			}
-			errs() << "finish 33\n";
 		}
-
-
-		// for (Instruction::use_iterator ui = v->use_begin(),
-		// 							   ue = v->use_end();
-		// 		ui != ue; ++ui) {
-		// 	cout << "entered" << endl;
-		// 	Instruction *user = dyn_cast<Instruction>(*ui);
-		// 	if (user == NULL) {
-		// 		error("used by a non-instruction?");
-		// 	}
-
-		// 	// make sure it's in the same function...
-		// 	// cout << "user func name" << u->getParent()->getParent()->getName().str() << endl;
-		// 	// cout << "v func name" << v->getParent()->getParent()->getName().str() << endl;
-		// 	if (user->getParent()->getParent() != v->getParent()->getParent()) {
-		// 		continue;
-		// 	}
-
-		// 	// call replaceUses so that it handles phi nodes
-		// 	// errs() << "replacing\n";
-		// 	// errs() << *user << "\n";
-		// 	// errs() << *u << "\n";
-		// 	// errs() << *v << "\n";
-		// 	map<Value *, Value *> reps;
-		// 	reps[oldu] = cast;
-		// 	// reps[dyn_cast<Value>(v->getOperand(0))] = cast;
-		// 	replaceUses(user, reps);
-		// }
-
 	} 
 	// TODO: need to handle true memory dependences more than just syncing?
 	else if (dtype == DTRUE) {	//READ after WRITE
-		error("check mem dep!!");
-
 		if (!isa<LoadInst>(v)) {
 			error("not true dependency");
 		}
@@ -951,7 +735,6 @@ void DSWP::insertConsume(Instruction *u, Instruction *v, DType dtype,
 				error("how could it be NULL");
 			}
 
-		//	int userthread = this->getNewInstAssigned(user);
 			if (user->getParent()->getParent() != v->getParent()->getParent()) {
 				continue;
 			}
@@ -963,14 +746,8 @@ void DSWP::insertConsume(Instruction *u, Instruction *v, DType dtype,
 				}
 			}
 		}
-	} else {
-		// nothing to do
 	}
 }
-
-// TODO: clean up redundant synchronization
-//       especially due to control dependences...
-
 
 void DSWP::cleanup(Loop *L, LPPassManager &LPM) {
 	// Move some instructions that may not have been inserted in the right
