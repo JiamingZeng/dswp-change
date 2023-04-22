@@ -1,61 +1,239 @@
 make: Nothing to be done for 'all'.
 run original code
-499700 0
-return value: 499700
-execution time was 1 ms.
+1977099539
+execution time was 2 ms.
 header:
 exit:
-num of blocks:3
+num of blocks:9
 
 
 >>Starting SCC computation
->>Adding [[  %t1 = load i32, ptr %2, align 4]] to SCC #0
->>Adding [[  %t2 = icmp slt i32 %t0, %t1]] to SCC #0
->>Adding [[  br i1 %t2, label %8, label %10]] to SCC #0
->>Adding [[  %t5 = load i32, ptr %3, align 4]] to SCC #0
->>Adding [[  %t9 = load i32, ptr %3, align 4]] to SCC #0
->>Adding [[  %t10 = add nsw i32 %t9, 1]] to SCC #0
->>Adding [[  store i32 %t10, ptr %3, align 4]] to SCC #0
->>Adding [[  %t0 = load i32, ptr %3, align 4]] to SCC #0
+>>Adding [[  %t1 = icmp slt i32 %t0, 100000]] to SCC #0
+>>Adding [[  br i1 %t1, label %10, label %18]] to SCC #0
+>>Adding [[  %t3 = load i32, ptr %5, align 4]] to SCC #0
+>>Adding [[  %t4 = srem i32 %t3, 3]] to SCC #0
+>>Adding [[  %t5 = icmp eq i32 %t4, 0]] to SCC #0
+>>Adding [[  br i1 %t5, label %11, label %12]] to SCC #0
+>>Adding [[  %t7 = load i32, ptr %5, align 4]] to SCC #0
+>>Adding [[  %t12 = load i32, ptr %5, align 4]] to SCC #0
+>>Adding [[  %t21 = load i32, ptr %5, align 4]] to SCC #0
+>>Adding [[  %t61 = load i32, ptr %5, align 4]] to SCC #0
+>>Adding [[  %t62 = add nsw i32 %t61, 1]] to SCC #0
+>>Adding [[  store i32 %t62, ptr %5, align 4]] to SCC #0
+>>Adding [[  %t0 = load i32, ptr %5, align 4]] to SCC #0
 >>SCC edge from 0 to 1
->>Adding [[  br label %7, !llvm.loop !6]] to SCC #1
+>>Adding [[  br label %9, !llvm.loop !6]] to SCC #1
 >>SCC edge from 0 to 2
->>Adding [[  br label %9]] to SCC #2
+>>Adding [[  br label %17]] to SCC #2
 >>SCC edge from 0 to 3
->>Adding [[  %t6 = add nsw i32 %t4, %t5]] to SCC #3
->>Adding [[  store i32 %t6, ptr %4, align 4]] to SCC #3
->>Adding [[  %t4 = load i32, ptr %4, align 4]] to SCC #3
->>Successfully computed SCCs, with sccNum = 4
+>>Adding [[  %t42 = load i32, ptr %6, align 4]] to SCC #3
+>>SCC edge from 3 to 4
+>>SCC edge from 0 to 4
+>>Adding [[  %t43 = add nsw i32 %t42, 1]] to SCC #4
+>>SCC edge from 4 to 5
+>>SCC edge from 3 to 5
+>>SCC edge from 0 to 5
+>>Adding [[  store i32 %t43, ptr %6, align 4]] to SCC #5
+>>SCC edge from 5 to 6
+>>SCC edge from 0 to 6
+>>Adding [[  %t51 = load i32, ptr %6, align 4]] to SCC #6
+>>SCC edge from 6 to 7
+>>SCC edge from 0 to 7
+>>Adding [[  %t52 = srem i32 %t51, 2]] to SCC #7
+>>SCC edge from 7 to 8
+>>SCC edge from 6 to 8
+>>SCC edge from 0 to 8
+>>Adding [[  store i32 %t52, ptr %6, align 4]] to SCC #8
+>>SCC edge from 0 to 9
+>>Adding [[  %t39 = load i32, ptr %8, align 4]] to SCC #9
+>>SCC edge from 0 to 10
+>>Adding [[  %t35 = load i32, ptr %7, align 4]] to SCC #10
+>>SCC edge from 8 to 11
+>>SCC edge from 0 to 11
+>>Adding [[  %t31 = load i32, ptr %6, align 4]] to SCC #11
+>>SCC edge from 0 to 12
+>>SCC edge from 11 to 12
+>>Adding [[  %t32 = add nsw i32 %t31, %t30]] to SCC #12
+>>Adding [[  store i32 %t32, ptr %6, align 4]] to SCC #12
+>>Adding [[  %t38 = load i32, ptr %6, align 4]] to SCC #12
+>>SCC edge from 9 to 12
+>>Adding [[  %t40 = add nsw i32 %t39, %t38]] to SCC #12
+>>Adding [[  store i32 %t40, ptr %8, align 4]] to SCC #12
+>>Adding [[  %t48 = load i32, ptr %8, align 4]] to SCC #12
+>>Adding [[  %t49 = add nsw i32 %t48, 1]] to SCC #12
+>>Adding [[  store i32 %t49, ptr %8, align 4]] to SCC #12
+>>Adding [[  %t57 = load i32, ptr %8, align 4]] to SCC #12
+>>Adding [[  %t58 = srem i32 %t57, 2]] to SCC #12
+>>Adding [[  store i32 %t58, ptr %8, align 4]] to SCC #12
+>>Adding [[  %t34 = load i32, ptr %8, align 4]] to SCC #12
+>>SCC edge from 10 to 12
+>>Adding [[  %t36 = add nsw i32 %t35, %t34]] to SCC #12
+>>Adding [[  store i32 %t36, ptr %7, align 4]] to SCC #12
+>>Adding [[  %t45 = load i32, ptr %7, align 4]] to SCC #12
+>>Adding [[  %t46 = add nsw i32 %t45, 1]] to SCC #12
+>>Adding [[  store i32 %t46, ptr %7, align 4]] to SCC #12
+>>Adding [[  %t54 = load i32, ptr %7, align 4]] to SCC #12
+>>Adding [[  %t55 = srem i32 %t54, 2]] to SCC #12
+>>Adding [[  store i32 %t55, ptr %7, align 4]] to SCC #12
+>>Adding [[  %t30 = load i32, ptr %7, align 4]] to SCC #12
+>>SCC edge from 0 to 13
+>>Adding [[  br label %12]] to SCC #13
+>>SCC edge from 0 to 14
+>>Adding [[  %t22 = srem i32 %t21, 15]] to SCC #14
+>>SCC edge from 14 to 15
+>>SCC edge from 0 to 15
+>>Adding [[  %t23 = icmp eq i32 %t22, 0]] to SCC #15
+>>SCC edge from 15 to 16
+>>SCC edge from 0 to 16
+>>Adding [[  br i1 %t23, label %15, label %16]] to SCC #16
+>>SCC edge from 16 to 17
+>>Adding [[  br label %16]] to SCC #17
+>>SCC edge from 0 to 18
+>>Adding [[  %t13 = srem i32 %t12, 5]] to SCC #18
+>>SCC edge from 18 to 19
+>>SCC edge from 0 to 19
+>>Adding [[  %t14 = icmp eq i32 %t13, 0]] to SCC #19
+>>SCC edge from 19 to 20
+>>SCC edge from 0 to 20
+>>Adding [[  br i1 %t14, label %13, label %14]] to SCC #20
+>>SCC edge from 20 to 21
+>>Adding [[  br label %14]] to SCC #21
+>>SCC edge from 0 to 22
+>>Adding [[  store i32 %t9, ptr %2, align 4]] to SCC #22
+>>SCC edge from 20 to 22
+>>Adding [[  %t16 = load i32, ptr %2, align 4]] to SCC #22
+>>Adding [[  %t8 = load i32, ptr %2, align 4]] to SCC #22
+>>Adding [[  %t9 = add nsw i32 %t8, %t7]] to SCC #22
+>>SCC edge from 22 to 23
+>>SCC edge from 0 to 23
+>>SCC edge from 20 to 23
+>>Adding [[  store i32 %t18, ptr %3, align 4]] to SCC #23
+>>SCC edge from 16 to 23
+>>Adding [[  %t25 = load i32, ptr %3, align 4]] to SCC #23
+>>Adding [[  %t17 = load i32, ptr %3, align 4]] to SCC #23
+>>Adding [[  %t18 = add nsw i32 %t17, %t16]] to SCC #23
+>>SCC edge from 23 to 24
+>>SCC edge from 0 to 24
+>>SCC edge from 16 to 24
+>>Adding [[  store i32 %t27, ptr %4, align 4]] to SCC #24
+>>Adding [[  %t26 = load i32, ptr %4, align 4]] to SCC #24
+>>Adding [[  %t27 = add nsw i32 %t26, %t25]] to SCC #24
+>>Successfully computed SCCs, with sccNum = 25
 
 >>Latencies by SCC:
-SCC #0: 12
+SCC #0: 34
 SCC #1: 0
 SCC #2: 0
-SCC #3: 5
-latency info:17 8
-part 0 size: 1
-part 1 size: 3
+SCC #3: 2
+SCC #4: 1
+SCC #5: 2
+SCC #6: 2
+SCC #7: 17
+SCC #8: 2
+SCC #9: 2
+SCC #10: 2
+SCC #11: 2
+SCC #12: 67
+SCC #13: 0
+SCC #14: 17
+SCC #15: 1
+SCC #16: 0
+SCC #17: 0
+SCC #18: 17
+SCC #19: 1
+SCC #20: 0
+SCC #21: 0
+SCC #22: 7
+SCC #23: 7
+SCC #24: 5
+latency info:188 37
+part 0 size: 2
+part 1 size: 10
+part 2 size: 3
+part 3 size: 10
+part 4 size: 0
 live variable information
-livein:   			
+livein:   							
 liveout:  
+WARNING: no related blocks, so doing a nothing function
 inserting sychronization
 
-SYN: channel 0: t2 -> t3 [0]
-SYN: channel 1: t5 -> t6 [0]
-SYN: channel 2: t3 -> t4 [5]
-SYN: channel 2: t3 -> t6 [5]
-SYN: channel 2: t3 -> t7 [5]
-SYN: channel 2: t3 -> t8 [5]
-SYN: channel 2: t3 -> t12 [5]
-SYN: channel 2: t3 -> t3 [5]
+SYN: channel 0: t1 -> t2 [0]
+SYN: channel 1: t1 -> t2 [0]
+SYN: channel 2: t1 -> t2 [0]
+SYN: channel 3: t5 -> t6 [0]
+SYN: channel 4: t7 -> t9 [0]
+SYN: channel 5: t12 -> t13 [0]
+SYN: channel 6: t14 -> t15 [0]
+SYN: channel 7: t22 -> t23 [0]
+SYN: channel 8: t23 -> t24 [0]
+SYN: channel 9: t35 -> t36 [0]
+SYN: channel 10: t35 -> t37 [2]
+SYN: channel 11: t39 -> t40 [0]
+SYN: channel 12: t39 -> t41 [2]
+SYN: channel 13: t52 -> t53 [0]
+SYN: channel 14: t51 -> t53 [2]
+SYN: channel 15: t2 -> t6 [5]
+SYN: channel 15: t2 -> t13 [5]
+SYN: channel 15: t2 -> t14 [5]
+SYN: channel 15: t2 -> t15 [5]
+SYN: channel 15: t2 -> t15 [5]
+SYN: channel 15: t2 -> t23 [5]
+SYN: channel 15: t2 -> t24 [5]
+SYN: channel 15: t2 -> t24 [5]
+SYN: channel 15: t2 -> t30 [5]
+SYN: channel 15: t2 -> t31 [5]
+SYN: channel 15: t2 -> t32 [5]
+SYN: channel 15: t2 -> t33 [5]
+SYN: channel 15: t2 -> t34 [5]
+SYN: channel 15: t2 -> t35 [5]
+SYN: channel 15: t2 -> t36 [5]
+SYN: channel 15: t2 -> t37 [5]
+SYN: channel 15: t2 -> t38 [5]
+SYN: channel 15: t2 -> t39 [5]
+SYN: channel 15: t2 -> t40 [5]
+SYN: channel 15: t2 -> t41 [5]
+SYN: channel 15: t2 -> t42 [5]
+SYN: channel 15: t2 -> t43 [5]
+SYN: channel 15: t2 -> t44 [5]
+SYN: channel 15: t2 -> t45 [5]
+SYN: channel 15: t2 -> t46 [5]
+SYN: channel 15: t2 -> t47 [5]
+SYN: channel 15: t2 -> t48 [5]
+SYN: channel 15: t2 -> t49 [5]
+SYN: channel 15: t2 -> t50 [5]
+SYN: channel 15: t2 -> t51 [5]
+SYN: channel 15: t2 -> t52 [5]
+SYN: channel 15: t2 -> t53 [5]
+SYN: channel 15: t2 -> t54 [5]
+SYN: channel 15: t2 -> t55 [5]
+SYN: channel 15: t2 -> t56 [5]
+SYN: channel 15: t2 -> t57 [5]
+SYN: channel 15: t2 -> t58 [5]
+SYN: channel 15: t2 -> t59 [5]
+SYN: channel 15: t2 -> t60 [5]
+SYN: channel 15: t2 -> t60 [5]
+SYN: channel 15: t2 -> t60 [5]
+SYN: channel 15: t2 -> t64 [5]
+SYN: channel 15: t2 -> t2 [5]
+SYN: channel 15: t2 -> t2 [5]
+SYN: channel 15: t2 -> t2 [5]
+SYN: channel 15: t6 -> t8 [5]
+SYN: channel 15: t6 -> t9 [5]
+SYN: channel 15: t6 -> t10 [5]
+SYN: channel 15: t6 -> t11 [5]
 begin to delete loop
 run optimized code
 init
 create thread!
 create thread!
+create thread!
+I'm here!
+create thread!
+I'm here!
+I'm here!
+create thread!
 I'm here!
 join
-I'm here!
-499700 0
-return value: 499700
-execution time was 3 ms.
+1977099539
+execution time was 102 ms.

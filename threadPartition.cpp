@@ -24,19 +24,10 @@ void DSWP::threadPartition(Loop *L) {
 		}
 	}
 
-	cout<<">>Latencies by SCC:"<<endl;
-	for (int i = 0; i < sccNum; i++)
-		cout<<"SCC #"<<i<<": "<<sccLatency[i]<<endl;
-
 	int averLatency = totalLatency / MAX_THREAD;
-
-	cout << "latency info:" << totalLatency << " " << averLatency << endl;
 
 	assigned.clear();
 	assigned.resize(sccNum, -2);
-	// -2: not assigned, and not in queue
-	// -1: not assigned, but in queue
-	// 0 <= i < MAX_THREAD: already been assigned, not in queue
 
 	int estLatency[MAX_THREAD] = {};
 
@@ -49,9 +40,6 @@ void DSWP::threadPartition(Loop *L) {
 	}
 
 	for (int i = 0; i < MAX_THREAD; i++) {
-		errs() << "MAX thread";
-		errs() << MAX_THREAD;
-		errs() << "\n";
 		while (!Q.empty()) {
 			QNode top = Q.top(); Q.pop();
 			assigned[top.u] = i;
@@ -82,14 +70,8 @@ void DSWP::threadPartition(Loop *L) {
 
 			// check load balance
 			if (estLatency[i] >= averLatency && i != MAX_THREAD - 1) {
-				// we've filled up this thread, so move on.
-				// don't do this for the last one, so everything gets scheduled.
 				break;
 			}
-
-			// TODO: think this breaks ties arbitrarily (maybe in insertion
-			// order?), while the original paper broke ties by choosing the one
-			// that results in fewest outgoing dependencies.
 		}
 	}
 

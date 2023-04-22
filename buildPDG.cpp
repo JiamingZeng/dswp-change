@@ -8,7 +8,7 @@ using namespace std;
 
 void DSWP::dfsVisit(BasicBlock *BB, std::set<BasicBlock *> &vis,
 					std::vector<BasicBlock *> &ord, Loop *L) {
-	vis.insert(BB); //Mark as visited
+	vis.insert(BB); 
 	for (succ_iterator SI = succ_begin(BB), E = succ_end(BB); SI != E; ++SI)
 		if (L->contains(*SI) && vis.find(*SI) == vis.end())
 			dfsVisit(*SI, vis, ord, L);
@@ -18,17 +18,11 @@ void DSWP::dfsVisit(BasicBlock *BB, std::set<BasicBlock *> &vis,
 
 void DSWP::buildPDG(Loop *L) {
 	errs()<<"Building PDG for new loop\n";
-	errs()<<">>Building PDG for new loop\n";
-	errs()<<">>Enumerating blocks\n";
-	// llvm::raw_ostream &output = llvm::outs();
 	raw_os_ostream outstream(cout);
 
-    //Initialize PDG
 	for (Loop::block_iterator bi = L->getBlocks().begin(); bi != L->getBlocks().end(); bi++) {
 		BasicBlock *BB = *bi;
-		errs()<<">>BASIC BLOCK ("<<BB->getName().str()<<")\n";
-		BB->print(errs());
-		errs()<<"\n";
+
 		for (BasicBlock::iterator ui = BB->begin(); ui != BB->end(); ui++) {
 			Instruction *inst = &(*ui);
 
@@ -48,8 +42,6 @@ void DSWP::buildPDG(Loop *L) {
 
 	errs()<<">>End basic blocks\n";
 
-	//LoopInfo &li = getAnalysis<LoopInfo>();
-
 	/*
 	 * Memory dependence analysis
 	 */
@@ -61,25 +53,15 @@ void DSWP::buildPDG(Loop *L) {
 		BasicBlock *BB = *bi;
 		for (BasicBlock::iterator ii = BB->begin(); ii != BB->end(); ii++) {
 			Instruction *inst = &(*ii);
-			errs() << "\nInstruction!!!!!";
 			inst->print(errs());
-			errs() << "\n";
 			//data dependence = register dependence + memory dependence
 
 			//begin register dependence
 			for (auto ui : ii->users()) {
 			// for (Value::use_iterator ui = ii->use_begin(); ui != ii->use_end(); ui++) {
-				errs() << "uses";
 				Instruction* a = dyn_cast<Instruction>(ui);
-				a->print(errs());
-				errs() << "\n";
 				if (Instruction *user = dyn_cast<Instruction>(ui)) {
 					if (L->contains(user)) {
-						errs()<<">>REG dependency: [[";
-						inst->print(errs());
-						errs()<<"]] -> [[";
-						user->print(errs());
-						errs()<<"]]\n";
 						addEdge(inst, user, REG);
 					}
 				}
@@ -92,15 +74,6 @@ void DSWP::buildPDG(Loop *L) {
 			}
 
 			MemDepResult mdr = mda.getDependency(inst);
-			//TODO not sure clobbers mean!!
-
-			errs() << "\n\t";
-			inst->print(errs());
-			errs() << "\t" << "isClobber: " << mdr.isClobber()
-			     << "\t" << "isDef: " << mdr.isDef()
-			     << "\t" << "isNonFuncLocal: " << mdr.isNonFuncLocal()
-			     << "\t" << "isNonLocal: " << mdr.isNonLocal()
-			     << "\t" << "isUnknown: " << mdr.isUnknown() << "\n";
 
 			if (mdr.isDef()) {
 				Instruction *dep = mdr.getInst();
@@ -108,20 +81,10 @@ void DSWP::buildPDG(Loop *L) {
 				if (isa<LoadInst>(inst)) {
 					//READ AFTER WRITE
 					if (isa<StoreInst>(dep)) {
-						errs()<<">>MEM read after write (true) dependency: [[";
-						dep->print(errs());
-						errs()<<"]] -> [[";
-						inst->print(errs());
-						errs()<<"]]\n";
 						addEdge(dep, inst, DTRUE);
 					}
 					//READ AFTER ALLOCATE
 					if (isa<AllocaInst>(dep)) {
-						errs()<<">>MEM read after allocate (true) dependency: [[";
-						dep->print(errs());
-						errs()<<"]] -> [[";
-						inst->print(errs());
-						errs()<<"]]\n";
 						addEdge(dep, inst, DTRUE);
 					}
 				}
@@ -129,29 +92,14 @@ void DSWP::buildPDG(Loop *L) {
 				if (isa<StoreInst>(inst)) {
 					//WRITE AFTER READ
 					if (isa<LoadInst>(dep)) {
-						errs()<<">>MEM write after read (anti) dependency: [[";
-						dep->print(errs());
-						errs()<<"]] -> [[";
-						inst->print(errs());
-						errs()<<"]]\n";
 						addEdge(dep, inst, DANTI);
 					}
 					//WRITE AFTER WRITE
 					if (isa<StoreInst>(dep)) {
-						errs()<<">>MEM write after write (out) dependency: [[";
-						dep->print(errs());
-						errs()<<"]] -> [[";
-						inst->print(errs());
-						errs()<<"]]\n";
 						addEdge(dep, inst, DOUT);
 					}
 					//WRITE AFTER ALLOCATE
 					if (isa<AllocaInst>(dep)) {
-						errs()<<">>MEM write after allocate (out) dependency: [[";
-						dep->print(errs());
-						errs()<<"]] -> [[";
-						inst->print(errs());
-						errs()<<"]]\n";
 						addEdge(dep, inst, DOUT);
 					}
 				}
@@ -179,32 +127,8 @@ void DSWP::buildPDG(Loop *L) {
 
 						addEdge(dep, inst, DANTI); // TODO: dep type
 
-						errs() << ">>NONLOCAL CALL dependency: [[";
-						dep->print(errs());
-						errs() << "]] -> [[";
-						inst->print(errs());
-						errs() << "]]\n";
 					}
 				} else {
-					//
-					// AAResults::Location MemLoc;
-					// bool is_load;
-					// if (LoadInst *i = dyn_cast<LoadInst>(inst)) {
-					// 	MemLoc = aa.getLocation(i);
-					// 	is_load = true;
-					// } else if (StoreInst *i = dyn_cast<StoreInst>(inst)) {
-					// 	MemLoc = aa.getLocation(i);
-					// 	is_load = false;
-					// } else if (VAArgInst *i = dyn_cast<VAArgInst>(inst)) {
-					// 	MemLoc = aa.getLocation(i);
-					// 	is_load = true;
-					// } else {
-					// 	// also does AtomicCmpXchInst, AtomicRMWInst
-					// 	// but what about call?
-					// 	error("aaaah exploding");
-					// 	return;
-					// }
-
 					typedef SmallVector<NonLocalDepResult, 6> res_t;
 					res_t res;
 					// mda.getNonLocalPointerDependency(
@@ -223,13 +147,6 @@ void DSWP::buildPDG(Loop *L) {
 						}
 
 						addEdge(dep, inst, DANTI);
-						// TODO: actually figure out the dependence type
-
-						errs() << ">>NONLOCAL dependency: [[";
-						dep->print(errs());
-						errs() << "]] -> [[";
-						inst->print(errs());
-						errs() << "]]";
 					}
 				}
 			}
@@ -256,14 +173,10 @@ void DSWP::buildPDG(Loop *L) {
 	static LLVMContext MyGlobalContext;
 	Module newmodule("dummymodule", MyGlobalContext);
 	IntegerType *int_arg = IntegerType::get(MyGlobalContext, 32);
-	errs()<<">>Trying to create function inside module...\n";
 	FunctionCallee func = newmodule.getOrInsertFunction("dummyloopunroll",
 													Type::getVoidTy(MyGlobalContext),
 													Type::getInt32Ty(MyGlobalContext));
-	// int_arg,
-	// NULL
 	Constant *cfunc = dyn_cast<Constant>(func.getCallee());
-	errs()<<">>Function created!\n";
 	Function *ctrlfunc = cast<Function>(cfunc);
 
 	/*
@@ -286,12 +199,7 @@ void DSWP::buildPDG(Loop *L) {
 			dfsVisit(BB, b_visited, bb_ordered, L);
 	}
 
-	errs()<<">>Reverse topological sort:\n";
 	assert(!bb_ordered.empty());
-	for (std::vector<BasicBlock *>::iterator it = bb_ordered.begin(); it !=
-		bb_ordered.end(); ++it) {
-	   errs()<<(*it)->getName().str()<<", ";
-	}
 
 	std::map<BasicBlock *, std::pair<BasicBlock *, BasicBlock *> > realtodummy;
 	std::map<BasicBlock *, BasicBlock *> dummytoreal;
@@ -309,7 +217,7 @@ void DSWP::buildPDG(Loop *L) {
 			const std::string str2 = "bottomhalf_" + (*it)->getName().str();
 			const Twine n1(str1);
 			const Twine n2(str2);
-			errs()<<"n1 = "<<n1.str()<<", n2 = "<<n2.str();
+			// errs()<<"n1 = "<<n1.str()<<", n2 = "<<n2.str();
 			BasicBlock *newbb = BasicBlock::Create(ctxt,
 												   n1, ctrlfunc, 0);
 			//Dummy block for second iteration
@@ -334,13 +242,7 @@ void DSWP::buildPDG(Loop *L) {
 	ReturnInst::Create(ctxt, 0, dummyexitblock);
 
 	errs()<<">>Printing out names of dummy blocks inside our fake function\n";
-	for (Function::iterator FI = ctrlfunc->begin(), FE = ctrlfunc->end();
-		 FI != FE; ++FI) {
-		errs()<<(*FI).getName().str()<<", ";
-	}
 
-	//Find blocks from which the loop may be exited
-	// TODO: we've assumed there's only one....
 	SmallVector<BasicBlock *, 10> bb_exits;
 	std::set<BasicBlock *> returnblocks;
 
@@ -439,14 +341,6 @@ void DSWP::buildPDG(Loop *L) {
 		} while (it != bb_ordered.begin());
 	}
 
-	errs()<<">>Printing out blocks\n";
-	for (Function::iterator FI = ctrlfunc->begin(), FE = ctrlfunc->end();
-		 FI != FE; ++FI) {
-		errs()<<"Contents of block "<<(*FI).getName().str()<<":\n";
-		(*FI).print(errs());
-		errs() << "\n";
-	}
-
 	errs()<<">>Printing out FUNCTION ctrlfunc:\n";
 	ctrlfunc->print(errs());
 	/*
@@ -455,13 +349,10 @@ void DSWP::buildPDG(Loop *L) {
 	 *
 	 */
 
-	errs()<<">>Attempting to grab postdominator tree...\n";
 	PostDominatorTreeWrapperPass pdtw;
 	pdtw.runOnFunction(ctrlfuncref);
 
 	PostDominatorTree &pdt = pdtw.getPostDomTree();
-	// pdt.runOnFunction(ctrlfuncref);
-	errs()<<">>Successfully grabbed postdominator tree from the analysis\n";
 
 	for (std::vector<BasicBlock *>::iterator it = dummylist.begin();
 		 it != dummylist.end(); ++it)
@@ -479,11 +370,6 @@ void DSWP::buildPDG(Loop *L) {
 											bsucc));
 			BasicBlock *depblock = succnode->getBlock();
 
-			//TODO: What if dn is null?
-
-			//As long as the current node is not a post-dominator for *it, add
-			//a control dependence edge and move upward in the post-dominator
-			//tree
 			while (succnode != dn && depblock != dummyexitblock)
 			{
 				BasicBlock *realdepblock = dummytoreal[depblock];
@@ -491,11 +377,6 @@ void DSWP::buildPDG(Loop *L) {
 				for (BasicBlock::iterator bi = realdepblock->begin(),
 						 be = realdepblock->end(); bi != be; ++bi) {
 					Instruction *inst = &(*bi);
-					errs()<<"Adding control edge from [[" << ti;
-					// ti->print(outstream);
-					errs()<<"]](in "<<realblock->getName().str()<<") to [[" << inst;
-					// inst->print(outstream);
-					errs()<<"]](in "<<realdepblock->getName().str()<<")\n";
 					addEdge(ti, inst, CONTROL);
 				}
 
@@ -504,7 +385,6 @@ void DSWP::buildPDG(Loop *L) {
 			}
 		}
 	}
-
 	//Note that our dummy function and its underlying blocks and instructions
 	//will automatically be deleted
 }

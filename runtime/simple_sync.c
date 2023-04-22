@@ -5,19 +5,21 @@
 
 static pthread_t threads[NUM_THREADS] = {};
 static queue_t data_queues[NUM_QUEUES] = {};
-
+//static int count = 0;
 
 void sync_produce(unsigned long long elem, int val_id) {
 	// printf("%lld\n", elem);
 	pthread_t tid = pthread_self();
-	// printf("-- thread id %d produce in channel %d, element is %lld\n", tid, val_id, elem);
+	//count++;
+	//printf("%d\n", count);
 	queue_push(&data_queues[val_id], elem);
 }
 
 unsigned long long sync_consume(int val_id) {
 	pthread_t tid = pthread_self();
 	unsigned long long res = queue_pop(&data_queues[val_id]);
-	// printf("thread id %d consume in channel %d, val is %lld \n", tid, val_id, res);
+	//count++;
+	//printf("%d\n", count);
 	return res;
 	// return queue_pop(&data_queues[val_id]);
 }

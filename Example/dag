@@ -1,9 +1,51 @@
-num:4
-SCC 0:t1 t2 t3 t5 t9 t10 t11 t0 
-	dependent scc:1 2 3 
-SCC 1:t12 
+num:25
+SCC 0:t1 t2 t3 t4 t5 t6 t7 t12 t21 t61 t62 t63 t0 
+	dependent scc:1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 18 19 20 22 23 24 
+SCC 1:t64 
 	dependent scc:
-SCC 2:t8 
+SCC 2:t60 
 	dependent scc:
-SCC 3:t6 t7 t4 
+SCC 3:t42 
+	dependent scc:4 5 
+SCC 4:t43 
+	dependent scc:5 
+SCC 5:t44 
+	dependent scc:6 
+SCC 6:t51 
+	dependent scc:7 8 
+SCC 7:t52 
+	dependent scc:8 
+SCC 8:t53 
+	dependent scc:11 
+SCC 9:t39 
+	dependent scc:12 
+SCC 10:t35 
+	dependent scc:12 
+SCC 11:t31 
+	dependent scc:12 
+SCC 12:t32 t33 t38 t40 t41 t48 t49 t50 t57 t58 t59 t34 t36 t37 t45 t46 t47 t54 t55 t56 t30 
+	dependent scc:
+SCC 13:t11 
+	dependent scc:
+SCC 14:t22 
+	dependent scc:15 
+SCC 15:t23 
+	dependent scc:16 
+SCC 16:t24 
+	dependent scc:17 23 24 
+SCC 17:t29 
+	dependent scc:
+SCC 18:t13 
+	dependent scc:19 
+SCC 19:t14 
+	dependent scc:20 
+SCC 20:t15 
+	dependent scc:21 22 23 
+SCC 21:t20 
+	dependent scc:
+SCC 22:t10 t16 t8 t9 
+	dependent scc:23 
+SCC 23:t19 t25 t17 t18 
+	dependent scc:24 
+SCC 24:t28 t26 t27 
 	dependent scc:

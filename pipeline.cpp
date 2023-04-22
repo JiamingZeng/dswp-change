@@ -170,8 +170,6 @@ bool DSWP::runOnLoop(Loop *L, LPPassManager &LPM) {
 	getLiveinfo(L);
 	showLiveInfo(L);
 	getDominators(L);
-	// TODO: should estimate whether splitting was helpful and if not, return
-	//       the unmodified code (like in the paper)
 	preLoopSplit(L);
 	loopSplit(L);
 	insertSynchronization(L);
@@ -193,14 +191,12 @@ void DSWP::addEdge(Instruction *u, Instruction *v, DType dtype) {
 		v->print(errs());
 		errs() << "\n";
 	}
-		//cout<<">>Skipping the edge, as it has been added already."<<endl;
 }
 
 bool DSWP::checkEdge(Instruction *u, Instruction *v) {
 
 	for (vector<Edge>::iterator it = pdg[u].begin(); it != pdg[v].end(); it++) {
 		if (it->v == v) {
-			//TODO report something
 			return true;
 		}
 	}
