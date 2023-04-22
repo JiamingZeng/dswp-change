@@ -26,15 +26,15 @@ sh try.sh
 ```
     
 ### Parameters:
-    - You can change the `MAX_THREAD` in the DSWP.h file. The minimum value is 2. When you change the maximum thread allowed, you need to do a remake.
-    - In the first line of `Examples/problem1.sh`, you are able to try running the file you like by `clang -O0 -c -fPIE yourfile.c -o obj.o -emit-llvm`.
+- You can change the `MAX_THREAD` in the DSWP.h file. The minimum value is 2. When you change the maximum thread allowed, you need to do a remake.
+- In the first line of `Examples/problem1.sh`, you are able to try running the file you like by `clang -O0 -c -fPIE yourfile.c -o obj.o -emit-llvm`.
 
 ### DSWP structures:
-    - To view the structures of DSWP, there are 4 files in the `Example` folder:
-      - `dag` outlines the SCCs and their dependencies
-      - `showgraph` shows the instructions 
-      - `partition` presents how SCCs are organized into each partition/threads. This is determined by the heuristic based on the latencies of each SCC. If you see one empty partition, reduce `MAX_THREAD`
-      - `out.o.ll` is a human readable file that displays the whole structures in each thread.
+- To view the structures of DSWP, there are 4 files in the `Example` folder:
+    - `dag` outlines the SCCs and their dependencies
+    - `showgraph` shows the instructions 
+    - `partition` presents how SCCs are organized into each partition/threads. This is determined by the heuristic based on the latencies of each SCC. If you see one empty partition, reduce `MAX_THREAD`
+    - `out.o.ll` is a human readable file that displays the whole structures in each thread.
 
 ### Contributing
 For major changes, please open an issue first to discuss what you would like to change.
